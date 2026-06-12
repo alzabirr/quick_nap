@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Global ValueNotifier to hold the current dark mode status
-final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(false);
+final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(true);
 
-bool get isDarkMode => darkModeNotifier.value;
+bool get isDarkMode => true;
 
-Color get primary => const Color(0xFF5E5CE6); // bright violet/indigo
-Color get accent => const Color(0xFFD946EF); // glowing magenta/pink
-Color get bgLight => isDarkMode ? const Color(0xFF000000) : const Color(0xFFFFFFFF); // Solid White or AMOLED Black background
-Color get surface => isDarkMode ? const Color(0xFF121212) : const Color(0xFFFFFFFF); // White or Dark card surface
-Color get textDark => isDarkMode ? const Color(0xFFF5F5F7) : const Color(0xFF1C1C1E); // Dark or Light typography
-Color get textMid => isDarkMode ? const Color(0xFF98989D) : const Color(0xFF8E8E93); // Gray text slate
+Color get primary => const Color(0xFF907AD6); // Soft Purple
+Color get accent => const Color(0xFFB8A9E8); // Light Lavender
+Color get bgLight => const Color(0xFF000000); // Black background
+Color get surface => const Color(0xFF121212); // Dark card surface
+Color get textDark => const Color(0xFFF5F5F7); // Light typography
+Color get textMid => const Color(0xFF98989D); // Gray text slate
 
 const List<Color> nodeColors = [
   Color(0xFF818CF8), // indigo

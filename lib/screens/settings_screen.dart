@@ -5,7 +5,8 @@ import '../themes/app_theme.dart';
 import '../widgets/ambient_background.dart';
 
 class SettingsScreen extends StatefulWidget {
-  const SettingsScreen({super.key});
+  final double? bottomPadding;
+  const SettingsScreen({super.key, this.bottomPadding});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();
@@ -155,27 +156,31 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final double listBottomPadding = widget.bottomPadding ?? (28.0 + MediaQuery.of(context).padding.bottom);
     return Scaffold(
       backgroundColor: bgLight,
       body: AmbientBackground(
         child: SafeArea(
+          bottom: widget.bottomPadding == null,
           child: ListView(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 28),
+                padding: EdgeInsets.fromLTRB(20, 12, 20, listBottomPadding),
                 physics: const BouncingScrollPhysics(),
                 children: [
                   Row(
                     children: [
-                       CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(44, 44),
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Icon(
-                          CupertinoIcons.chevron_left,
-                          color: textDark,
-                          size: 28,
+                      if (Navigator.of(context).canPop()) ...[
+                        CupertinoButton(
+                          padding: EdgeInsets.zero,
+                          minimumSize: const Size(44, 44),
+                          onPressed: () => Navigator.of(context).pop(),
+                          child: Icon(
+                            CupertinoIcons.chevron_left,
+                            color: textDark,
+                            size: 28,
+                          ),
                         ),
-                      ),
-                      const SizedBox(width: 12),
+                        const SizedBox(width: 12),
+                      ],
                       Text(
                         'Settings',
                         style: headingStyle(
@@ -240,6 +245,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Privacy',
                         subtitle: 'Manage local data and permissions',
                         onTap: _showPrivacyDialog,
+                      ),
+                      _Divider(),
+                      _ActionSetting(
+                        icon: CupertinoIcons.refresh,
+                        title: 'Reset Application',
+                        subtitle: 'Clear all history & repeat onboarding',
+                        onTap: () async {
+                          showCupertinoDialog<void>(
+                            context: context,
+                            builder: (dialogContext) => CupertinoAlertDialog(
+                              title: const Text("Reset App?"),
+                              content: const Text("This will clear all logged sleep history and reset your goals."),
+                              actions: [
+                                CupertinoDialogAction(
+                                  child: const Text("Cancel"),
+                                  onPressed: () => Navigator.of(dialogContext).pop(),
+                                ),
+                                CupertinoDialogAction(
+                                  isDestructiveAction: true,
+                                  child: const Text("Reset"),
+                                  onPressed: () async {
+                                    final storage = HiveStorage();
+                                    await storage.saveSetting('onboarding_complete', false);
+                                    await storage.saveSetting('sessions_list', null);
+                                    if (context.mounted) {
+                                      Navigator.of(dialogContext).pop();
+                                      Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);
+                                    }
+                                  },
+                                ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                       _Divider(),
                       _ActionSetting(
