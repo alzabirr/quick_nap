@@ -6,8 +6,8 @@ final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(true);
 
 bool get isDarkMode => true;
 
-Color get primary => const Color(0xFFD7494C); // Soft Purple
-Color get accent => const Color(0xFFD7494C); // Light Lavender
+Color get primary => const Color(0xFFD7494C); // red
+Color get accent => const Color(0xFFD7494C); // red
 Color get bgLight => const Color(0xFF000000); // Black background
 Color get surface => const Color(0xFF121212); // Dark card surface
 Color get textDark => const Color(0xFFF5F5F7); // Light typography
