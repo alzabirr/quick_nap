@@ -6,12 +6,46 @@ final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(true);
 
 bool get isDarkMode => true;
 
-Color get primary => const Color(0xFF907AD6); // Soft Purple
-Color get accent => const Color(0xFFB8A9E8); // Light Lavender
-Color get bgLight => const Color(0xFF000000); // Black background
-Color get surface => const Color(0xFF121212); // Dark card surface
+// ─── Core Palette ───
+Color get primary => const Color(0xFFD7494C); // Soft Purple
+Color get accent => const Color(0xFFD7494C); // Light Lavender
+Color get bgLight => const Color(0xFF050A18); // Deep Navy (was pure black)
+Color get bgDeep => const Color(0xFF020510); // Even deeper for layering
+Color get surface => const Color(0xFF0E1225); // Dark card surface (navy-tinted)
+Color get surfaceLight => const Color(0xFF151B33); // Lighter surface variant
 Color get textDark => const Color(0xFFF5F5F7); // Light typography
-Color get textMid => const Color(0xFF98989D); // Gray text slate
+Color get textMid => const Color(0xFF7B8199); // Slate-purple mid text
+
+// ─── Aurora / Ambient Colors ───
+Color get auroraBlue => const Color(0xFF2E5BFF).withValues(alpha: 0.12);
+Color get auroraPurple => const Color(0xFF907AD6).withValues(alpha: 0.08);
+Color get auroraGreen => const Color(0xFF34D399).withValues(alpha: 0.06);
+
+// ─── Gradient Presets ───
+LinearGradient get primaryGradient => LinearGradient(
+  colors: [primary, accent],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
+
+LinearGradient get heroGradient => LinearGradient(
+  colors: [
+    primary.withValues(alpha: 0.6),
+    accent.withValues(alpha: 0.3),
+    const Color(0xFF2E5BFF).withValues(alpha: 0.2),
+  ],
+  begin: Alignment.topCenter,
+  end: Alignment.bottomCenter,
+);
+
+LinearGradient get cardGradient => LinearGradient(
+  colors: [
+    Colors.white.withValues(alpha: 0.06),
+    Colors.white.withValues(alpha: 0.02),
+  ],
+  begin: Alignment.topLeft,
+  end: Alignment.bottomRight,
+);
 
 const List<Color> nodeColors = [
   Color(0xFF818CF8), // indigo
@@ -129,5 +163,24 @@ TextStyle bodyStyle({
     height: height,
     letterSpacing: -0.2,
     decoration: TextDecoration.none,
+  );
+}
+
+// Glowing hero text style
+TextStyle heroTextStyle({
+  double fontSize = 48.0,
+  Color? color,
+  FontWeight fontWeight = FontWeight.w200,
+}) {
+  return GoogleFonts.inter(
+    fontSize: fontSize,
+    color: color ?? Colors.white,
+    fontWeight: fontWeight,
+    letterSpacing: -1.5,
+    decoration: TextDecoration.none,
+    shadows: [
+      Shadow(color: primary.withValues(alpha: 0.4), blurRadius: 20),
+      Shadow(color: accent.withValues(alpha: 0.2), blurRadius: 40),
+    ],
   );
 }
