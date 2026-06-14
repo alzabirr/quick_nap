@@ -16,6 +16,7 @@ import 'alertness_game_screen.dart';
 import 'settings_screen.dart';
 import 'sleep_journal_screen.dart';
 import 'dream_notes_screen.dart';
+import 'brain_games_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -61,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: [
                       _buildDashboardTab(bottomPadding),
                       _buildNotesTab(bottomPadding),
+                      _buildBrainGamesTab(bottomPadding),
                       _buildCoachingTab(bottomPadding),
                       _buildSettingsTab(bottomPadding),
                     ][_selectedTabIndex],
@@ -70,15 +72,15 @@ class _HomeScreenState extends State<HomeScreen> {
 
               // Bottom Navigation Bar
               Positioned(
-                bottom: 24 + MediaQuery.of(context).padding.bottom,
-                left: 30,
-                right: 30,
+                bottom: 12 + MediaQuery.of(context).padding.bottom,
+                left: 24,
+                right: 24,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(40),
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
                     child: Container(
-                      height: 68,
+                      height: 72,
                       decoration: BoxDecoration(
                         color: const Color(0xFF16161A).withValues(alpha: 0.88),
                         borderRadius: BorderRadius.circular(40),
@@ -94,14 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ],
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          _buildNavBarItem(0, CupertinoIcons.house),
-                          _buildNavBarItem(1, CupertinoIcons.doc_plaintext),
-                          _buildNavBarItem(2, CupertinoIcons.square_grid_2x2),
-                          _buildNavBarItem(3, CupertinoIcons.person),
+                          _buildNavBarItem(0, CupertinoIcons.house, 'Home'),
+                          _buildNavBarItem(1, CupertinoIcons.doc_plaintext, 'Journal'),
+                          _buildNavBarItem(2, CupertinoIcons.gamecontroller_fill, 'Games'),
+                          _buildNavBarItem(3, CupertinoIcons.moon_stars_fill, 'Sleep'),
+                          _buildNavBarItem(4, CupertinoIcons.gear_alt_fill, 'Settings'),
                         ],
                       ),
                     ),
@@ -209,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildNavBarItem(int index, IconData icon) {
+  Widget _buildNavBarItem(int index, IconData icon, String label) {
     final isSelected = _selectedTabIndex == index;
     return GestureDetector(
       onTap: () {
@@ -217,34 +220,40 @@ class _HomeScreenState extends State<HomeScreen> {
           _selectedTabIndex = index;
         });
       },
+      behavior: HitTestBehavior.opaque,
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        width: 52,
-        height: 52,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: isSelected ? primary : Colors.transparent,
-        ),
-        child: Center(
-          child: Icon(
-            icon,
-            color: isSelected ? Colors.white : Colors.white.withValues(alpha: 0.65),
-            size: 24,
-          ),
+        width: 64,
+        padding: const EdgeInsets.symmetric(vertical: 6),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? primary : Colors.white.withValues(alpha: 0.5),
+              size: 22,
+            ),
+            const SizedBox(height: 3),
+            Text(
+              label,
+              style: bodyStyle(
+                fontSize: 10,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                color: isSelected ? primary : Colors.white.withValues(alpha: 0.5),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // ================= TAB 0: DASHBOARD =================
   void _selectPresetAndSetAlarm(Duration duration, String title, String badge) {
     final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
     
-    // Calculate targeted wake time
     final wakeTime = DateTime.now().add(duration);
     final timeStr = TimeOfDay(hour: wakeTime.hour, minute: wakeTime.minute).format(context);
     
-    // Parse duration into hours/minutes
     final hours = duration.inHours;
     final mins = duration.inMinutes % 60;
     
@@ -279,7 +288,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Top drag handle
               Container(
                 width: 44,
                 height: 5,
@@ -290,14 +298,12 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 24),
               
-              // Badge/Header
               Text(
                 badge.toUpperCase(),
                 style: bodyStyle(color: textMid, fontSize: 13, fontWeight: FontWeight.w700),
               ),
               const SizedBox(height: 24),
               
-              // Big duration texts
               if (hours > 0) ...[
                 Text(
                   hrText,
@@ -318,7 +324,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
               const SizedBox(height: 32),
               
-              // Wake up time indicator
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -332,36 +337,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SizedBox(height: 12),
               
-              // Info indicator
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(CupertinoIcons.info, color: Colors.white38, size: 14),
                   const SizedBox(width: 6),
                   Text(
-                    "Extra 15 mins will be added for falling asleep",
+                    "Extra 15 mins added for falling asleep",
                     style: bodyStyle(color: textMid, fontSize: 11, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
               const SizedBox(height: 36),
               
-              // Set Alarm Button
               CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () {
-                  // Actually configure the alarm
                   alarmProvider.updateConfig(alarmProvider.config.copyWith(
                     hour: wakeTime.hour,
                     minute: wakeTime.minute,
                     isEnabled: true,
                   ));
                   
-                  Navigator.of(sheetContext).pop(); // close bottom sheet
+                  Navigator.of(sheetContext).pop();
                   
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('$title Preset selected! Smart alarm scheduled for $timeStr'),
+                      content: Text('$title alarm set for $timeStr'),
                       behavior: SnackBarBehavior.floating,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
@@ -400,17 +402,18 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ================= TAB 0: DASHBOARD =================
   Widget _buildDashboardTab(double bottomPadding) {
     return ListView(
       padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding),
       physics: const BouncingScrollPhysics(),
       children: [
-        // Set Alarm Section Title
+        // Quick Nap Section
         Text(
-          "Set Alarm",
-          style: headingStyle(fontSize: 20, fontWeight: FontWeight.w800),
+          "Quick Nap",
+          style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
 
         // Preset 1: Power Nap
         GestureDetector(
@@ -452,6 +455,11 @@ class _HomeScreenState extends State<HomeScreen> {
         const SizedBox(height: 16),
 
         // Preset Grid: 1-4 Cycles
+        Text(
+          "Sleep Cycles",
+          style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 12),
         GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
@@ -490,7 +498,14 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 20),
+
+        // Recommended Section
+        Text(
+          "Recommended",
+          style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 12),
 
         // Preset 5: Recommended 7h 30m Card
         GestureDetector(
@@ -967,9 +982,14 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         Text(
           "Sleep Coaching",
-          style: headingStyle(fontSize: 26, fontWeight: FontWeight.w800),
+          style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 4),
+        Text(
+          "Your personalized insights for better sleep",
+          style: bodyStyle(color: textMid, fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        const SizedBox(height: 24),
 
         // Streaks & Achievements Card
         glassCard(
@@ -980,37 +1000,69 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildMetricColumn(
                 icon: CupertinoIcons.flame_fill,
                 color: Colors.orange,
-                value: "${sleepProvider.goal.currentStreak} Days",
-                label: "Sleep Streak",
+                value: "${sleepProvider.goal.currentStreak}",
+                label: "Day Streak",
+                unit: "days",
               ),
-              Container(width: 1, height: 40, color: Colors.white10),
+              Container(width: 1, height: 50, color: Colors.white10),
               _buildMetricColumn(
                 icon: CupertinoIcons.star_fill,
                 color: Colors.amber,
                 value: "${sleepProvider.goal.unlockedBadges.length}",
-                label: "Achievements",
+                label: "Badges",
+                unit: "earned",
               ),
             ],
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 24),
 
-        // Launch Game Card
+        // Morning Wake-Up Game Card
+        Text(
+          "Morning Wake-Up",
+          style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w700),
+        ),
+        const SizedBox(height: 12),
         glassCard(
           padding: const EdgeInsets.all(18),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "MORNING REACTION TEST",
-                style: bodyStyle(fontSize: 12, color: textMid, fontWeight: FontWeight.w800),
+              Row(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: primary.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(CupertinoIcons.bolt_fill, color: primary, size: 20),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Reaction Test",
+                          style: headingStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                        ),
+                        Text(
+                          "Sharpen your morning mind",
+                          style: bodyStyle(fontSize: 12, color: textMid, fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 14),
               Text(
-                "Struggling to wake up? Play a quick reflex mini-game to stimulate your mind and clear cognitive fog.",
+                "Struggling to wake up? Play a quick reflex game to clear cognitive fog and start your day alert.",
                 style: bodyStyle(fontSize: 14, height: 1.4),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 14),
               CupertinoButton(
                 padding: EdgeInsets.zero,
                 onPressed: () {
@@ -1019,12 +1071,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(
                   height: 44,
                   decoration: BoxDecoration(
-                    color: primary.withValues(alpha: 0.15),
+                    color: primary.withValues(alpha: 0.12),
                     borderRadius: BorderRadius.circular(14),
                   ),
                   child: Center(
                     child: Text(
-                      "Launch Reflex Test ⚡",
+                      "Start Reflex Test",
                       style: bodyStyle(color: primary, fontWeight: FontWeight.w700),
                     ),
                   ),
@@ -1033,12 +1085,12 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        const SizedBox(height: 18),
+        const SizedBox(height: 24),
 
-        // AI Recommendations Section
+        // Personalized Tips Section
         Text(
-          "AI Coaching Advice",
-          style: headingStyle(fontSize: 18, fontWeight: FontWeight.w700),
+          "Personalized Tips",
+          style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 12),
         ...tips.map((tip) {
@@ -1049,7 +1101,15 @@ class _HomeScreenState extends State<HomeScreen> {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(CupertinoIcons.lightbulb_fill, color: Colors.amber, size: 20),
+                  Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: Colors.amber.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: const Icon(CupertinoIcons.lightbulb_fill, color: Colors.amber, size: 16),
+                  ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
@@ -1066,13 +1126,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMetricColumn({required IconData icon, required Color color, required String value, required String label}) {
+  Widget _buildMetricColumn({required IconData icon, required Color color, required String value, required String label, String? unit}) {
     return Column(
       children: [
         Icon(icon, color: color, size: 28),
-        const SizedBox(height: 6),
-        Text(value, style: headingStyle(fontSize: 18, fontWeight: FontWeight.w700)),
-        Text(label, style: bodyStyle(fontSize: 12, color: textMid)),
+        const SizedBox(height: 8),
+        Text(value, style: headingStyle(fontSize: 24, fontWeight: FontWeight.w800)),
+        Text(label, style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w600)),
+        if (unit != null)
+          Text(unit, style: bodyStyle(fontSize: 11, color: textMid.withValues(alpha: 0.7), fontWeight: FontWeight.w500)),
       ],
     );
   }
@@ -1088,6 +1150,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildNotesTab(double bottomPadding) {
     return DreamNotesScreen(bottomPadding: bottomPadding);
+  }
+
+  Widget _buildBrainGamesTab(double bottomPadding) {
+    return BrainGamesScreen();
   }
 
   void _showCustomAlarmBottomSheet() {

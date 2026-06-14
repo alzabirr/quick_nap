@@ -184,7 +184,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       Text(
                         'Settings',
                         style: headingStyle(
-                          fontSize: 18,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w800,
                           color: textDark,
                         ),
                       ),
@@ -196,25 +197,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     workspaceName: _workspaceName,
                     onTap: _showEditProfileDialog,
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 24),
+
                   _SettingsGroup(
-                    title: 'Profile',
+                    title: 'ACCOUNT',
                     children: [
                       _ActionSetting(
                         icon: CupertinoIcons.person_crop_circle,
                         title: 'Edit profile',
-                        subtitle: 'Name, photo and personal details',
+                        subtitle: 'Name and personal details',
                         onTap: _showEditProfileDialog,
                       ),
                       _Divider(),
                       _SwitchSetting(
                         title: 'Notifications',
+                        subtitle: 'Alarm and reminder alerts',
                         value: _notificationsEnabled,
                         onChanged: _updateNotifications,
                       ),
                       _Divider(),
                       _SwitchSetting(
                         title: 'Cloud sync',
+                        subtitle: 'Back up your data',
                         value: _cloudSyncEnabled,
                         onChanged: _updateCloudSync,
                       ),
@@ -222,20 +226,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                   const SizedBox(height: 18),
                   _SettingsGroup(
-                    title: 'App',
+                    title: 'APPEARANCE',
                     children: [
                       _SwitchSetting(
                         title: 'Dark Mode',
-                        value: isDarkMode,
+                        subtitle: 'Easier on the eyes at night',
+                        value: darkModeNotifier.value,
                         onChanged: (val) async {
                           await _storage.saveSetting('darkMode', val);
                           darkModeNotifier.value = val;
                           setState(() {});
                         },
                       ),
-                      _Divider(),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  _SettingsGroup(
+                    title: 'APP',
+                    children: [
                       _SwitchSetting(
                         title: 'Haptic feedback',
+                        subtitle: 'Vibrate on interactions',
                         value: _hapticFeedbackEnabled,
                         onChanged: _updateHapticFeedback,
                       ),
@@ -243,20 +254,32 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       _ActionSetting(
                         icon: CupertinoIcons.lock_shield,
                         title: 'Privacy',
-                        subtitle: 'Manage local data and permissions',
+                        subtitle: 'Data stays on this device',
                         onTap: _showPrivacyDialog,
                       ),
                       _Divider(),
                       _ActionSetting(
+                        icon: CupertinoIcons.info_circle,
+                        title: 'About',
+                        subtitle: 'Version 1.0.0',
+                        onTap: _showAboutDialog,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 18),
+                  _SettingsGroup(
+                    title: 'DATA',
+                    children: [
+                      _ActionSetting(
                         icon: CupertinoIcons.refresh,
                         title: 'Reset Application',
-                        subtitle: 'Clear all history & repeat onboarding',
+                        subtitle: 'Clear all data and start fresh',
                         onTap: () async {
                           showCupertinoDialog<void>(
                             context: context,
                             builder: (dialogContext) => CupertinoAlertDialog(
                               title: const Text("Reset App?"),
-                              content: const Text("This will clear all logged sleep history and reset your goals."),
+                              content: const Text("This will clear all your sleep history, dream notes, and goals. This cannot be undone."),
                               actions: [
                                 CupertinoDialogAction(
                                   child: const Text("Cancel"),
@@ -269,6 +292,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     final storage = HiveStorage();
                                     await storage.saveSetting('onboarding_complete', false);
                                     await storage.saveSetting('sessions_list', null);
+                                    await storage.saveSetting('dream_notes', null);
                                     if (context.mounted) {
                                       Navigator.of(dialogContext).pop();
                                       Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);
@@ -279,13 +303,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             ),
                           );
                         },
-                      ),
-                      _Divider(),
-                      _ActionSetting(
-                        icon: CupertinoIcons.info_circle,
-                        title: 'About',
-                        subtitle: 'Version 1.0.0',
-                        onTap: _showAboutDialog,
                       ),
                     ],
                   ),
@@ -477,11 +494,13 @@ class _ActionSetting extends StatelessWidget {
 
 class _SwitchSetting extends StatelessWidget {
   final String title;
+  final String? subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
 
   const _SwitchSetting({
     required this.title,
+    this.subtitle,
     required this.value,
     required this.onChanged,
   });
@@ -489,11 +508,24 @@ class _SwitchSetting extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          title,
-          style: bodyStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: bodyStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  subtitle!,
+                  style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w500),
+                ),
+              ],
+            ],
+          ),
         ),
         CupertinoSwitch(
           value: value,

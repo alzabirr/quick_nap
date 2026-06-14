@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 // Global ValueNotifier to hold the current dark mode status
 final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(true);
 
-bool get isDarkMode => true;
+bool get isDarkMode => darkModeNotifier.value;
 
 Color get primary => const Color(0xFFD7494C); // red
 Color get accent => const Color(0xFFD7494C); // red

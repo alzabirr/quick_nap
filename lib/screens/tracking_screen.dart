@@ -1,9 +1,7 @@
-import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
-import '../models/sleep_session.dart';
 import '../providers/sleep_provider.dart';
 import '../providers/alarm_provider.dart';
 import '../themes/app_theme.dart';

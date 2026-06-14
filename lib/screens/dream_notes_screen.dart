@@ -53,8 +53,8 @@ class DreamNotesScreen extends StatelessWidget {
                       'Dream Diary',
                       style: headingStyle(
                         fontSize: 24,
-                        color: textDark,
                         fontWeight: FontWeight.w800,
+                        color: textDark,
                       ),
                     ),
                     CupertinoButton(
@@ -71,7 +71,7 @@ class DreamNotesScreen extends StatelessWidget {
                             const Icon(CupertinoIcons.plus, color: Colors.white, size: 16),
                             const SizedBox(width: 4),
                             Text(
-                              'Add Note',
+                              'New Note',
                               style: bodyStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w700),
                             ),
                           ],
@@ -86,21 +86,33 @@ class DreamNotesScreen extends StatelessWidget {
               Expanded(
                 child: notes.isEmpty
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(CupertinoIcons.doc_plaintext, size: 64, color: textMid.withValues(alpha: 0.3)),
-                            const SizedBox(height: 16),
-                            Text(
-                              "No notes yet",
-                              style: headingStyle(fontSize: 18, color: textMid, fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Write down your dreams and thoughts.",
-                              style: bodyStyle(fontSize: 14, color: textMid),
-                            ),
-                          ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: const Color(0xFFA78BFA).withValues(alpha: 0.1),
+                                ),
+                                child: const Icon(CupertinoIcons.sparkles, size: 36, color: Color(0xFFA78BFA)),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                "No dreams recorded",
+                                style: headingStyle(fontSize: 18, color: textDark, fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Capture your dreams and reflections to understand your sleep better.",
+                                style: bodyStyle(fontSize: 14, color: textMid, height: 1.5),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : ListView.builder(
@@ -147,7 +159,7 @@ class DreamNotesScreen extends StatelessWidget {
                                           const SizedBox(width: 8),
                                           CupertinoButton(
                                             padding: EdgeInsets.zero,
-                                            minSize: 24,
+                                            minimumSize: const Size(24, 24),
                                             onPressed: () => _confirmDelete(context, notesProvider, note),
                                             child: const Icon(CupertinoIcons.trash, color: Colors.redAccent, size: 16),
                                           ),
@@ -173,6 +185,8 @@ class DreamNotesScreen extends StatelessWidget {
                                       fontWeight: FontWeight.w400,
                                       height: 1.4,
                                     ),
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                   const SizedBox(height: 12),
 

@@ -23,7 +23,7 @@ class NotesProvider with ChangeNotifier {
         _notes = [];
       }
     } else {
-      _seedInitialNotes();
+      _notes = [];
     }
     notifyListeners();
   }

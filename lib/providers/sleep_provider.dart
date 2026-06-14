@@ -48,8 +48,7 @@ class SleepProvider with ChangeNotifier {
         _sessions = [];
       }
     } else {
-      // Seed initial dummy data for analytics so the user sees beautiful graphs immediately
-      _seedDummyData();
+      _sessions = [];
     }
 
     // Load goals

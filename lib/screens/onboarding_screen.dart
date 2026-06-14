@@ -186,31 +186,51 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Icon(
-            CupertinoIcons.moon_stars_fill,
-            size: 80,
-            color: Color(0xFFA78BFA),
+          Container(
+            width: 80,
+            height: 80,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: LinearGradient(
+                colors: [primary, accent],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: primary.withValues(alpha: 0.3),
+                  blurRadius: 24,
+                  spreadRadius: 4,
+                ),
+              ],
+            ),
+            child: const Icon(
+              CupertinoIcons.moon_stars_fill,
+              size: 40,
+              color: Colors.white,
+            ),
           ).animate().slideY(begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutBack).fadeIn(),
-          const SizedBox(height: 24),
+          const SizedBox(height: 32),
           Text(
-            "Welcome to\nSmart Sleep Cycle",
-            style: headingStyle(fontSize: 34, fontWeight: FontWeight.w800),
+            "Welcome to\nSmart Sleep",
+            style: headingStyle(fontSize: 36, fontWeight: FontWeight.w800),
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
-            "Track your phases, record nighttime disruptions, and wake up fresh with optimized AI smart alarms.",
+            "Track your sleep cycles, record dreams, and wake up at the perfect moment with smart alarms.",
             style: bodyStyle(color: textMid, fontSize: 16, height: 1.5),
           ).animate().fadeIn(delay: 400.ms),
-          const SizedBox(height: 36),
+          const SizedBox(height: 40),
           glassCard(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
             child: CupertinoTextField(
               controller: _nameController,
-              placeholder: "Enter your first name",
+              placeholder: "What's your name?",
               placeholderStyle: bodyStyle(color: textMid.withValues(alpha: 0.6), fontSize: 16),
               style: bodyStyle(fontSize: 16),
               decoration: null,
               cursorColor: primary,
+              textCapitalization: TextCapitalization.words,
             ),
           ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1, end: 0),
         ],
@@ -226,15 +246,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "What brings you here?",
+            "What matters most?",
             style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           Text(
-            "We'll customize your AI coaching tips based on your goals.",
+            "We'll tailor your sleep coaching tips to help you reach your goals.",
             style: bodyStyle(color: textMid, fontSize: 15),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: 28),
           Expanded(
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -254,9 +274,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         }
                       });
                     },
-                    child: glassCard(
-                      opacity: isSelected ? 0.28 : 0.1,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      decoration: BoxDecoration(
+                        color: isSelected ? primary.withValues(alpha: 0.12) : surface.withValues(alpha: 0.4),
+                        borderRadius: BorderRadius.circular(18),
+                        border: Border.all(
+                          color: isSelected ? primary.withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.06),
+                          width: isSelected ? 1.5 : 1,
+                        ),
+                      ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -271,18 +299,18 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           ),
                           AnimatedContainer(
                             duration: const Duration(milliseconds: 200),
-                            width: 20,
-                            height: 20,
+                            width: 24,
+                            height: 24,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
+                              color: isSelected ? primary : Colors.transparent,
                               border: Border.all(
                                 color: isSelected ? primary : textMid.withValues(alpha: 0.4),
                                 width: 2.0,
                               ),
-                              color: isSelected ? primary : Colors.transparent,
                             ),
                             child: isSelected
-                                ? const Icon(Icons.check, size: 12, color: Colors.white)
+                                ? const Icon(Icons.check, size: 14, color: Colors.white)
                                 : null,
                           ),
                         ],
@@ -306,12 +334,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            "Schedule your sleep",
+            "Set your sleep goal",
             style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: 8),
           Text(
-            "How much sleep would you like to achieve nightly, and when is bedtime?",
+            "How many hours of sleep do you want, and when do you go to bed?",
             style: bodyStyle(color: textMid, fontSize: 15),
           ),
           const SizedBox(height: 32),
@@ -321,39 +349,62 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "Sleep Duration Target",
-                  style: bodyStyle(fontSize: 14, color: textMid, fontWeight: FontWeight.w700),
+                  "DAILY SLEEP TARGET",
+                  style: bodyStyle(fontSize: 12, color: textMid, fontWeight: FontWeight.w800),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 14),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      "$_targetSleepHours Hours",
-                      style: headingStyle(fontSize: 22, fontWeight: FontWeight.w700),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "$_targetSleepHours",
+                          style: headingStyle(fontSize: 40, fontWeight: FontWeight.w800),
+                        ),
+                        Text(
+                          _targetSleepHours == 1 ? "hour" : "hours",
+                          style: bodyStyle(color: textMid, fontSize: 14, fontWeight: FontWeight.w500),
+                        ),
+                      ],
                     ),
                     Row(
                       children: [
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          minSize: 36,
-                          child: Icon(CupertinoIcons.minus_circle, color: primary, size: 28),
-                          onPressed: () {
+                        GestureDetector(
+                          onTap: () {
                             if (_targetSleepHours > 4) {
                               setState(() => _targetSleepHours--);
                             }
                           },
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: surface.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                            ),
+                            child: Icon(CupertinoIcons.minus, color: _targetSleepHours > 4 ? primary : textMid, size: 20),
+                          ),
                         ),
-                        const SizedBox(width: 12),
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          minSize: 36,
-                          child: Icon(CupertinoIcons.plus_circle, color: primary, size: 28),
-                          onPressed: () {
+                        const SizedBox(width: 16),
+                        GestureDetector(
+                          onTap: () {
                             if (_targetSleepHours < 12) {
                               setState(() => _targetSleepHours++);
                             }
                           },
+                          child: Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              color: surface.withValues(alpha: 0.6),
+                              borderRadius: BorderRadius.circular(14),
+                              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                            ),
+                            child: Icon(CupertinoIcons.plus, color: _targetSleepHours < 12 ? primary : textMid, size: 20),
+                          ),
                         ),
                       ],
                     ),
@@ -364,8 +415,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   child: Divider(color: Colors.white10),
                 ),
                 Text(
-                  "Target Bedtime",
-                  style: bodyStyle(fontSize: 14, color: textMid, fontWeight: FontWeight.w700),
+                  "BEDTIME",
+                  style: bodyStyle(fontSize: 12, color: textMid, fontWeight: FontWeight.w800),
                 ),
                 const SizedBox(height: 12),
                 GestureDetector(
@@ -391,15 +442,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       });
                     }
                   },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        _targetBedtime.format(context),
-                        style: headingStyle(fontSize: 22, fontWeight: FontWeight.w700),
-                      ),
-                      Icon(CupertinoIcons.clock, color: primary),
-                    ],
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: surface.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          _targetBedtime.format(context),
+                          style: headingStyle(fontSize: 24, fontWeight: FontWeight.w700),
+                        ),
+                        Icon(CupertinoIcons.clock, color: primary, size: 22),
+                      ],
+                    ),
                   ),
                 ),
               ],

@@ -50,10 +50,23 @@ class SleepJournalScreen extends StatelessWidget {
                       'Sleep Journal',
                       style: headingStyle(
                         fontSize: 24,
-                        color: textDark,
                         fontWeight: FontWeight.w800,
+                        color: textDark,
                       ),
                     ),
+                    const Spacer(),
+                    if (sessions.isNotEmpty)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: primary.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Text(
+                          '${sessions.length} entries',
+                          style: bodyStyle(color: primary, fontSize: 12, fontWeight: FontWeight.w700),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -62,21 +75,33 @@ class SleepJournalScreen extends StatelessWidget {
               Expanded(
                 child: sessions.isEmpty
                     ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(CupertinoIcons.eye_fill, size: 64, color: const Color(0xFFEF4444).withValues(alpha: 0.3)),
-                            const SizedBox(height: 16),
-                            Text(
-                              "No journal entries yet",
-                              style: headingStyle(fontSize: 18, color: textMid, fontWeight: FontWeight.w600),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              "Log your sleep to write down dreams.",
-                              style: bodyStyle(fontSize: 14, color: textMid),
-                            ),
-                          ],
+                        child: Padding(
+                          padding: const EdgeInsets.all(32),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 80,
+                                height: 80,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: primary.withValues(alpha: 0.1),
+                                ),
+                                child: Icon(CupertinoIcons.moon_stars, size: 36, color: primary),
+                              ),
+                              const SizedBox(height: 20),
+                              Text(
+                                "No sleep sessions yet",
+                                style: headingStyle(fontSize: 18, color: textDark, fontWeight: FontWeight.w700),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                "Start tracking your sleep to see your journal entries here.",
+                                style: bodyStyle(fontSize: 14, color: textMid, height: 1.5),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     : ListView.builder(
@@ -107,7 +132,7 @@ class SleepJournalScreen extends StatelessWidget {
                             'caffeine': 'Caffeine ☕',
                             'screen_time': 'Screen 📱',
                             'stress': 'Stress ⚡',
-                            'exercise': 'Exercise 🏃‍♂️',
+                            'exercise': 'Exercise 🏃',
                           };
 
                           return Padding(
@@ -128,13 +153,13 @@ class SleepJournalScreen extends StatelessWidget {
                                       Container(
                                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                         decoration: BoxDecoration(
-                                          color: primary.withValues(alpha: 0.15),
+                                          color: _scoreColor(session.sleepScore).withValues(alpha: 0.15),
                                           borderRadius: BorderRadius.circular(10),
-                                          border: Border.all(color: primary.withValues(alpha: 0.3), width: 1),
+                                          border: Border.all(color: _scoreColor(session.sleepScore).withValues(alpha: 0.3), width: 1),
                                         ),
                                         child: Text(
                                           'Score: ${session.sleepScore}',
-                                          style: bodyStyle(color: primary, fontSize: 12, fontWeight: FontWeight.w700),
+                                          style: bodyStyle(color: _scoreColor(session.sleepScore), fontSize: 12, fontWeight: FontWeight.w700),
                                         ),
                                       ),
                                     ],
@@ -232,5 +257,11 @@ class SleepJournalScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _scoreColor(int score) {
+    if (score >= 80) return const Color(0xFF34D399);
+    if (score >= 60) return const Color(0xFFFBBF24);
+    return const Color(0xFFEF4444);
   }
 }
