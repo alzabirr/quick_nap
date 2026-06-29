@@ -1938,6 +1938,7 @@ class ShapeMatchGame extends StatefulWidget {
 class _ShapeMatchGameState extends State<ShapeMatchGame> {
   final List<Color> _colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow, Colors.purple, Colors.orange];
   List<int> _shapes = [];
+  List<bool> _revealed = [];
   int? _selected;
   int _matches = 0;
   int _moves = 0;
@@ -1949,8 +1950,9 @@ class _ShapeMatchGameState extends State<ShapeMatchGame> {
   }
 
   void _initGame() {
-    final pairs = List.generate(6, (i) => i)..toList();
+    final pairs = List.generate(6, (i) => i);
     _shapes = [...pairs, ...pairs]..shuffle();
+    _revealed = List.filled(12, false);
     _selected = null;
     _matches = 0;
     _moves = 0;
@@ -1962,12 +1964,26 @@ class _ShapeMatchGameState extends State<ShapeMatchGame> {
     setState(() {
       _moves++;
       if (_selected == null) {
+        _revealed[index] = true;
         _selected = index;
       } else {
+        _revealed[index] = true;
         if (_shapes[_selected!] == _shapes[index]) {
           _shapes[_selected!] = -1;
           _shapes[index] = -1;
           _matches++;
+        } else {
+          // Hide both tiles after a short delay on mismatch
+          final first = _selected!;
+          final second = index;
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (mounted) {
+              setState(() {
+                _revealed[first] = false;
+                _revealed[second] = false;
+              });
+            }
+          });
         }
         _selected = null;
       }
@@ -2013,17 +2029,17 @@ class _ShapeMatchGameState extends State<ShapeMatchGame> {
                   itemBuilder: (context, index) {
                     final shapeIndex = _shapes[index];
                     final isMatched = shapeIndex == -1;
-                    final isSelected = _selected == index;
+                    final isRevealed = _revealed[index];
                     return GestureDetector(
                       onTap: () => _onTap(index),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 200),
                         decoration: BoxDecoration(
-                          color: isMatched ? Colors.transparent : isSelected ? _colors[shapeIndex].withValues(alpha: 0.5) : surface,
+                          color: isMatched ? Colors.transparent : isRevealed ? _colors[shapeIndex].withValues(alpha: 0.5) : surface,
                           borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: isSelected ? _colors[shapeIndex] : Colors.white10, width: isSelected ? 2 : 1),
+                          border: Border.all(color: isRevealed ? _colors[shapeIndex] : Colors.white10, width: isRevealed ? 2 : 1),
                         ),
-                        child: isMatched ? null : Center(
+                        child: isMatched || !isRevealed ? null : Center(
                           child: Container(
                             width: 30,
                             height: 30,

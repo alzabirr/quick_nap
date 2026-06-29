@@ -54,7 +54,6 @@ class AlarmNotificationService {
     if (kIsWeb || !config.isEnabled) return;
 
     try {
-      await initialize();
       await _notifications.cancel(id: _alarmNotificationId);
 
       await _notifications.zonedSchedule(
@@ -95,7 +94,6 @@ class AlarmNotificationService {
     if (kIsWeb) return;
 
     try {
-      await initialize();
       await _notifications.cancel(id: _alarmNotificationId);
     } catch (error) {
       debugPrint('Alarm notification cancel failed: $error');

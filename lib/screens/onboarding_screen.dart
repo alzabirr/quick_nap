@@ -54,23 +54,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finishOnboarding() async {
+    // Capture state before any async gaps
     final storage = HiveStorage();
     final name = _nameController.text.trim().isEmpty ? 'Sleep Companion' : _nameController.text.trim();
-    await storage.saveSetting('profileName', name);
-    await storage.saveSetting('onboarding_complete', true);
-
-    // Save sleep goal config
     final sleepProvider = Provider.of<SleepProvider>(context, listen: false);
     final goal = SleepGoal(
       targetSleepMinutes: _targetSleepHours * 60,
       targetBedtimeHour: _targetBedtime.hour,
       targetBedtimeMinute: _targetBedtime.minute,
     );
+    
+    await storage.saveSetting('profileName', name);
+    await storage.saveSetting('onboarding_complete', true);
     await sleepProvider.saveGoal(goal);
 
-    if (mounted) {
-      Navigator.of(context).pushReplacementNamed('/home');
-    }
+    if (!mounted) return;
+    Navigator.of(context).pushReplacementNamed('/home');
   }
 
   @override

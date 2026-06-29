@@ -7,7 +7,9 @@ final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(true);
 bool get isDarkMode => darkModeNotifier.value;
 
 Color get primary => const Color(0xFFD7494C);
-Color get accent => const Color(0xFFD7494C);
+Color get accent => isDarkMode 
+    ? const Color(0xFFE86B6E) 
+    : const Color(0xFFB83A3D);
 
 Color get bgLight => isDarkMode ? const Color(0xFF000000) : const Color(0xFFF2F2F7);
 Color get surface => isDarkMode ? const Color(0xFF121212) : const Color(0xFFFFFFFF);

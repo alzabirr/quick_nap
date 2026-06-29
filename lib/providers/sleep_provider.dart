@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:uuid/uuid.dart';
 import '../models/sleep_session.dart';
 import '../models/sleep_goal.dart';
 import '../storage/hive_storage.dart';
@@ -276,74 +275,6 @@ class SleepProvider with ChangeNotifier {
       unlockedBadges: badges,
     );
     saveGoal(updatedGoal);
-  }
-
-  void _seedDummyData() {
-    // Seed 7 days of historical sessions
-    final now = DateTime.now();
-    final List<SleepSession> seeded = [];
-    final rand = Random();
-
-    for (int i = 6; i >= 0; i--) {
-      final date = now.subtract(Duration(days: i + 1));
-      
-      // Bedtime around 10:30 PM - 11:30 PM
-      final bedtime = DateTime(date.year, date.month, date.day, 22, 30 + rand.nextInt(60));
-      // Wake up around 6:30 AM - 7:30 AM
-      final wakeTime = DateTime(date.year, date.month, date.day + 1, 6, 30 + rand.nextInt(60));
-      
-      final phases = <SleepPhaseSegment>[];
-      DateTime current = bedtime;
-      final cycle = [SleepPhase.light, SleepPhase.deep, SleepPhase.rem];
-      int cycleIdx = 0;
-      
-      while (current.isBefore(wakeTime)) {
-        final duration = 45 + rand.nextInt(45);
-        DateTime end = current.add(Duration(minutes: duration));
-        if (end.isAfter(wakeTime)) end = wakeTime;
-        
-        phases.add(SleepPhaseSegment(
-          startTime: current,
-          endTime: end,
-          phase: cycle[cycleIdx % 3],
-        ));
-        
-        current = end;
-        cycleIdx++;
-      }
-      
-      final disturbances = <SoundDisturbance>[];
-      final distCount = 2 + rand.nextInt(5);
-      for (int d = 0; d < distCount; d++) {
-        disturbances.add(SoundDisturbance(
-          timestamp: bedtime.add(Duration(minutes: rand.nextInt(400))),
-          type: DisturbanceType.values[rand.nextInt(DisturbanceType.values.length)],
-          intensity: 0.4 + rand.nextDouble() * 0.6,
-        ));
-      }
-      
-      final habits = <String>[];
-      if (rand.nextDouble() > 0.4) habits.add('caffeine');
-      if (rand.nextDouble() > 0.5) habits.add('screen_time');
-      if (rand.nextDouble() > 0.3) habits.add('stress');
-      if (rand.nextDouble() > 0.5) habits.add('exercise');
-
-      final score = 65 + rand.nextInt(30);
-
-      seeded.add(SleepSession(
-        id: Uuid().v4(),
-        startTime: bedtime,
-        endTime: wakeTime,
-        sleepScore: score,
-        phases: phases,
-        disturbances: disturbances,
-        moodRating: 3 + rand.nextInt(3),
-        habits: habits,
-      ));
-    }
-    
-    _sessions = seeded;
-    _storage.saveSetting('sessions_list', jsonEncode(_sessions.map((s) => s.toJson()).toList()));
   }
 
   // Sleep coaching tips generator

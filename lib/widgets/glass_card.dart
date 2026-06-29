@@ -12,10 +12,10 @@ Widget glassCard({
   return GlassContainer(
     blur: 24,
     opacity: opacity,
-    color: Colors.white.withValues(alpha: opacity),
+    color: Colors.white.withValues(alpha: opacity * 0.8),
     borderRadius: radius,
     border: Border.all(
-      color: Colors.white.withValues(alpha: 0.35),
+      color: Colors.white.withValues(alpha: 0.25),
       width: 1.2,
     ),
     shadowColor: Colors.black.withValues(alpha: 0.08),

@@ -52,27 +52,4 @@ class NotesProvider with ChangeNotifier {
   Future<void> _saveNotes() async {
     await _storage.saveSetting('dream_notes_list', jsonEncode(_notes.map((n) => n.toJson()).toList()));
   }
-
-  void _seedInitialNotes() {
-    final now = DateTime.now();
-    _notes = [
-      DreamNote(
-        date: now.subtract(const Duration(days: 1)),
-        title: 'Flying over mountains 🏔️',
-        content: 'I had a vivid dream where I was soaring high above a range of snowy mountains. The wind felt so real and cold. I could control my flight by leaning forward.',
-        lucidityScore: 4,
-        moodEmoji: '🤩',
-        category: 'lucid',
-      ),
-      DreamNote(
-        date: now.subtract(const Duration(days: 3)),
-        title: 'Lost in a neon library 📚',
-        content: 'Walking through endless rows of books glowing in purple and cyan lights. I was trying to find a specific book about stars but the letters kept changing whenever I looked closely.',
-        lucidityScore: 2,
-        moodEmoji: '🙂',
-        category: 'dream',
-      ),
-    ];
-    _saveNotes();
-  }
 }

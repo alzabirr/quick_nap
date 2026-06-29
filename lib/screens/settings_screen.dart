@@ -292,7 +292,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     final storage = HiveStorage();
                                     await storage.saveSetting('onboarding_complete', false);
                                     await storage.saveSetting('sessions_list', null);
-                                    await storage.saveSetting('dream_notes', null);
+                                    await storage.saveSetting('dream_notes_list', null);
                                     if (context.mounted) {
                                       Navigator.of(dialogContext).pop();
                                       Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);

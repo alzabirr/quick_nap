@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import '../themes/app_theme.dart';
-import '../providers/sleep_provider.dart';
 import '../providers/alarm_provider.dart';
 import '../widgets/ambient_background.dart';
 import '../widgets/glass_card.dart';
 import '../models/alarm_config.dart';
-import 'alertness_game_screen.dart';
 import 'settings_screen.dart';
 import 'dream_notes_screen.dart';
 import 'brain_games_screen.dart';
@@ -1048,19 +1046,6 @@ class _HomeScreenState extends State<HomeScreen> {
             style: bodyStyle(fontSize: 12, color: textMid, height: 1.4),
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildMetricColumn({required IconData icon, required Color color, required String value, required String label, String? unit}) {
-    return Column(
-      children: [
-        Icon(icon, color: color, size: 28),
-        const SizedBox(height: 8),
-        Text(value, style: headingStyle(fontSize: 24, fontWeight: FontWeight.w800)),
-        Text(label, style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w600)),
-        if (unit != null)
-          Text(unit, style: bodyStyle(fontSize: 11, color: textMid.withValues(alpha: 0.7), fontWeight: FontWeight.w500)),
       ],
     );
   }
