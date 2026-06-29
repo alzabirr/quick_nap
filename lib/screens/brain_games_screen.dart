@@ -73,14 +73,6 @@ class _BrainGamesScreenState extends State<BrainGamesScreen> {
                     ),
                     const SizedBox(height: 12),
                     _buildGameCard(
-                      title: 'Number Sequence',
-                      subtitle: 'Complete the pattern',
-                      icon: CupertinoIcons.list_number,
-                      color: Colors.blue,
-                      onTap: () => _navigateToGame(const NumberSequenceGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
                       title: 'Color Reaction',
                       subtitle: 'Test your reflexes',
                       icon: CupertinoIcons.paintbrush,
@@ -142,22 +134,6 @@ class _BrainGamesScreenState extends State<BrainGamesScreen> {
                       icon: CupertinoIcons.square_grid_2x2,
                       color: Colors.brown,
                       onTap: () => _navigateToGame(const PuzzleSlideGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Quiz Trivia',
-                      subtitle: 'Test your knowledge',
-                      icon: CupertinoIcons.question_circle_fill,
-                      color: Colors.deepOrange,
-                      onTap: () => _navigateToGame(const QuizTriviaGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Shape Match',
-                      subtitle: 'Match the shapes',
-                      icon: CupertinoIcons.star_fill,
-                      color: Colors.lime,
-                      onTap: () => _navigateToGame(const ShapeMatchGame()),
                     ),
                     const SizedBox(height: 12),
                     _buildGameCard(

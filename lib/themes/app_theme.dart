@@ -6,12 +6,13 @@ final ValueNotifier<bool> darkModeNotifier = ValueNotifier<bool>(true);
 
 bool get isDarkMode => darkModeNotifier.value;
 
-Color get primary => const Color(0xFFD7494C); // red
-Color get accent => const Color(0xFFD7494C); // red
-Color get bgLight => const Color(0xFF000000); // Black background
-Color get surface => const Color(0xFF121212); // Dark card surface
-Color get textDark => const Color(0xFFF5F5F7); // Light typography
-Color get textMid => const Color(0xFF98989D); // Gray text slate
+Color get primary => const Color(0xFFD7494C);
+Color get accent => const Color(0xFFD7494C);
+
+Color get bgLight => isDarkMode ? const Color(0xFF000000) : const Color(0xFFF2F2F7);
+Color get surface => isDarkMode ? const Color(0xFF121212) : const Color(0xFFFFFFFF);
+Color get textDark => isDarkMode ? const Color(0xFFF5F5F7) : const Color(0xFF1C1C1E);
+Color get textMid => isDarkMode ? const Color(0xFF98989D) : const Color(0xFF8E8E93);
 
 const List<Color> nodeColors = [
   Color(0xFF818CF8), // indigo

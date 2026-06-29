@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'screens/home_screen.dart';
+import 'screens/onboarding_screen.dart';
 import 'storage/hive_storage.dart';
 import 'themes/app_theme.dart';
 import 'providers/sleep_provider.dart';
@@ -18,11 +19,11 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark,
-      statusBarBrightness: Brightness.light,
+      statusBarIconBrightness: Brightness.light,
+      statusBarBrightness: Brightness.dark,
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarDividerColor: Colors.transparent,
-      systemNavigationBarIconBrightness: Brightness.dark,
+      systemNavigationBarIconBrightness: Brightness.light,
       systemNavigationBarContrastEnforced: false,
       systemStatusBarContrastEnforced: false,
     ),
@@ -69,8 +70,8 @@ class SnapApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
             brightness: isDark ? Brightness.dark : Brightness.light,
-            primaryColor: const Color(0xFFFB4169),
-            scaffoldBackgroundColor: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
+            primaryColor: const Color(0xFFD7494C),
+            scaffoldBackgroundColor: isDark ? const Color(0xFF000000) : const Color(0xFFF2F2F7),
             appBarTheme: AppBarTheme(
               backgroundColor: Colors.transparent,
               elevation: 0,
@@ -88,15 +89,16 @@ class SnapApp extends StatelessWidget {
             ),
             cupertinoOverrideTheme: CupertinoThemeData(
               brightness: isDark ? Brightness.dark : Brightness.light,
-              primaryColor: const Color(0xFFFB4169),
+              primaryColor: const Color(0xFFD7494C),
               barBackgroundColor: isDark ? const Color(0xCC121212) : const Color(0xCCFFFFFF),
-              scaffoldBackgroundColor: isDark ? const Color(0xFF000000) : const Color(0xFFFFFFFF),
-              textTheme: const CupertinoTextThemeData(primaryColor: Color(0xFFFB4169)),
+              scaffoldBackgroundColor: isDark ? const Color(0xFF000000) : const Color(0xFFF2F2F7),
+              textTheme: const CupertinoTextThemeData(primaryColor: Color(0xFFD7494C)),
             ),
           ),
-          home: const HomeScreen(),
+          home: onboardingComplete ? const HomeScreen() : const OnboardingScreen(),
           routes: {
             '/home': (context) => const HomeScreen(),
+            '/onboarding': (context) => const OnboardingScreen(),
           },
         );
       },
