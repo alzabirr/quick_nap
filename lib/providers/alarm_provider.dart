@@ -24,7 +24,8 @@ class AlarmProvider with ChangeNotifier {
 
   void _startAlarmCheck() {
     _alarmCheckTimer?.cancel();
-    _alarmCheckTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+    // Check every 30 seconds instead of every second to reduce battery drain
+    _alarmCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       if (_config.isEnabled && !_isRinging) {
         final now = DateTime.now();
         final minuteKey = '${now.year}-${now.month}-${now.day}-${now.hour}-${now.minute}';
@@ -88,6 +89,20 @@ class AlarmProvider with ChangeNotifier {
     );
     await _storage.saveSetting('alarm_config', jsonEncode(_config.toJson()));
     await AlarmNotificationService.scheduleAlarm(_config);
+    notifyListeners();
+  }
+
+  /// Reset provider state (used during full app reset)
+  void resetState() {
+    _config = AlarmConfig(hour: 7, minute: 0);
+    _isRinging = false;
+    _lastTriggeredMinute = null;
+    _alarmCheckTimer?.cancel();
+    _startAlarmCheck();
+    // Schedule notification for default enabled alarm, matching _loadConfig() pattern
+    if (_config.isEnabled) {
+      unawaited(AlarmNotificationService.scheduleAlarm(_config));
+    }
     notifyListeners();
   }
 

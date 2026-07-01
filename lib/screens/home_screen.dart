@@ -1060,7 +1060,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBrainGamesTab(double bottomPadding) {
-    return BrainGamesScreen();
+    return const BrainGamesScreen();
   }
 
   void _showCustomAlarmBottomSheet() {

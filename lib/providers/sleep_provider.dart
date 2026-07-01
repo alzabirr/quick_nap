@@ -253,7 +253,7 @@ class SleepProvider with ChangeNotifier {
     if (targetSlept) {
       newStreak += 1;
     } else {
-      newStreak = 1; // reset or default to 1 for sleeping
+      newStreak = 0; // Streak broken when target not met
     }
     
     final longest = max(newStreak, _goal.longestStreak);
@@ -275,6 +275,21 @@ class SleepProvider with ChangeNotifier {
       unlockedBadges: badges,
     );
     saveGoal(updatedGoal);
+  }
+
+  /// Reset provider state (used during full app reset)
+  void resetState() {
+    _sessions = [];
+    _goal = SleepGoal();
+    _isTracking = false;
+    _trackingStartTime = null;
+    _liveMovement.clear();
+    _liveNoise.clear();
+    _liveDisturbances.clear();
+    _livePhase = SleepPhase.light;
+    _liveTimer?.cancel();
+    _liveTimer = null;
+    notifyListeners();
   }
 
   // Sleep coaching tips generator

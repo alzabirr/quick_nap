@@ -1,5 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/alarm_provider.dart';
+import '../providers/sleep_provider.dart';
 import '../storage/hive_storage.dart';
 import '../themes/app_theme.dart';
 import '../widgets/ambient_background.dart';
@@ -149,8 +152,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showAboutDialog() {
     _showInfoDialog(
-      title: 'About Starter Kit',
-      message: 'Starter Kit 1.0.0\nA beautiful flutter boilerplate.',
+      title: 'About Nappy',
+      message: 'Nappy 1.0.0\nSmart sleep tracking and alarm app.',
     );
   }
 
@@ -207,15 +210,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Edit profile',
                         subtitle: 'Name and personal details',
                         onTap: _showEditProfileDialog,
-                      ),
-                      _Divider(),
+                      ),                       const _Divider(),
                       _SwitchSetting(
                         title: 'Notifications',
                         subtitle: 'Alarm and reminder alerts',
                         value: _notificationsEnabled,
                         onChanged: _updateNotifications,
-                      ),
-                      _Divider(),
+                      ),                       const _Divider(),
                       _SwitchSetting(
                         title: 'Cloud sync',
                         subtitle: 'Back up your data',
@@ -249,15 +250,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         subtitle: 'Vibrate on interactions',
                         value: _hapticFeedbackEnabled,
                         onChanged: _updateHapticFeedback,
-                      ),
-                      _Divider(),
+                      ),                       const _Divider(),
                       _ActionSetting(
                         icon: CupertinoIcons.lock_shield,
                         title: 'Privacy',
                         subtitle: 'Data stays on this device',
                         onTap: _showPrivacyDialog,
-                      ),
-                      _Divider(),
+                      ),                       const _Divider(),
                       _ActionSetting(
                         icon: CupertinoIcons.info_circle,
                         title: 'About',
@@ -293,7 +292,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     await storage.saveSetting('onboarding_complete', false);
                                     await storage.saveSetting('sessions_list', null);
                                     await storage.saveSetting('dream_notes_list', null);
+                                    await storage.saveSetting('alarm_config', null);
+                                    await storage.saveSetting('sleep_goal', null);
+                                    // Reset in-memory provider state
                                     if (context.mounted) {
+                                      Provider.of<SleepProvider>(context, listen: false).resetState();
+                                      Provider.of<AlarmProvider>(context, listen: false).resetState();
                                       Navigator.of(dialogContext).pop();
                                       Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);
                                     }
@@ -538,6 +542,8 @@ class _SwitchSetting extends StatelessWidget {
 }
 
 class _Divider extends StatelessWidget {
+  const _Divider();
+
   @override
   Widget build(BuildContext context) {
     return Padding(
