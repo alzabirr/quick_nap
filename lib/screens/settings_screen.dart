@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:nes_ui/nes_ui.dart';
 import '../providers/alarm_provider.dart';
 import '../providers/sleep_provider.dart';
 import '../storage/hive_storage.dart';
@@ -66,36 +67,36 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final nameController = TextEditingController(text: _profileName);
     final workspaceController = TextEditingController(text: _workspaceName);
 
-    await showCupertinoDialog<void>(
+    await showDialog<void>(
       context: context,
       builder: (dialogContext) {
-        return CupertinoAlertDialog(
-          title: const Text('Edit profile'),
-          content: Padding(
-            padding: const EdgeInsets.only(top: 12),
-            child: Column(
-              children: [
-                CupertinoTextField(
-                  controller: nameController,
-                  placeholder: 'Name',
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: 10),
-                CupertinoTextField(
-                  controller: workspaceController,
-                  placeholder: 'Workspace',
-                  textInputAction: TextInputAction.done,
-                ),
-              ],
-            ),
+        return AlertDialog(
+          backgroundColor: surface,
+          title: Text('Edit profile', style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+                style: const TextStyle(fontSize: 12),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: workspaceController,
+                decoration: const InputDecoration(labelText: 'Workspace'),
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
           ),
           actions: [
-            CupertinoDialogAction(
+            NesButton(
+              type: NesButtonType.normal,
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text('Cancel', style: bodyStyle(fontSize: 10, color: Colors.black)),
             ),
-            CupertinoDialogAction(
-              isDefaultAction: true,
+            NesButton(
+              type: NesButtonType.primary,
               onPressed: () async {
                 final name = nameController.text.trim().isEmpty
                     ? 'Starter User'
@@ -114,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Navigator.of(dialogContext).pop();
                 }
               },
-              child: const Text('Save'),
+              child: Text('Save', style: bodyStyle(fontSize: 10)),
             ),
           ],
         );
@@ -126,16 +127,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   void _showInfoDialog({required String title, required String message}) {
-    showCupertinoDialog<void>(
+    showDialog<void>(
       context: context,
-      builder: (dialogContext) => CupertinoAlertDialog(
-        title: Text(title),
-        content: Text(message),
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: surface,
+        title: Text(title, style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+        content: Text(message, style: bodyStyle(fontSize: 10, color: textMid)),
         actions: [
-          CupertinoDialogAction(
-            isDefaultAction: true,
+          NesButton(
+            type: NesButtonType.primary,
             onPressed: () => Navigator.of(dialogContext).pop(),
-            child: const Text('OK'),
+            child: Text('OK', style: bodyStyle(fontSize: 10)),
           ),
         ],
       ),
@@ -145,8 +147,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showPrivacyDialog() {
     _showInfoDialog(
       title: 'Privacy',
-      message:
-          'Data is stored locally on this device.',
+      message: 'Data is stored locally on this device.',
     );
   }
 
@@ -172,25 +173,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   Row(
                     children: [
                       if (Navigator.of(context).canPop()) ...[
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(44, 44),
+                        NesButton(
+                          type: NesButtonType.normal,
                           onPressed: () => Navigator.of(context).pop(),
-                          child: Icon(
-                            CupertinoIcons.chevron_left,
-                            color: textDark,
-                            size: 28,
-                          ),
+                          child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20),
                         ),
                         const SizedBox(width: 12),
                       ],
                       Text(
-                        'Settings',
-                        style: headingStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: textDark,
-                        ),
+                        'SETTINGS',
+                        style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -200,7 +192,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     workspaceName: _workspaceName,
                     onTap: _showEditProfileDialog,
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   _SettingsGroup(
                     title: 'ACCOUNT',
@@ -210,13 +202,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Edit profile',
                         subtitle: 'Name and personal details',
                         onTap: _showEditProfileDialog,
-                      ),                       const _Divider(),
+                      ),
+                      const _Divider(),
                       _SwitchSetting(
                         title: 'Notifications',
                         subtitle: 'Alarm and reminder alerts',
                         value: _notificationsEnabled,
                         onChanged: _updateNotifications,
-                      ),                       const _Divider(),
+                      ),
+                      const _Divider(),
                       _SwitchSetting(
                         title: 'Cloud sync',
                         subtitle: 'Back up your data',
@@ -225,7 +219,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 14),
                   _SettingsGroup(
                     title: 'APPEARANCE',
                     children: [
@@ -241,7 +235,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 14),
                   _SettingsGroup(
                     title: 'APP',
                     children: [
@@ -250,13 +244,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         subtitle: 'Vibrate on interactions',
                         value: _hapticFeedbackEnabled,
                         onChanged: _updateHapticFeedback,
-                      ),                       const _Divider(),
+                      ),
+                      const _Divider(),
                       _ActionSetting(
                         icon: CupertinoIcons.lock_shield,
                         title: 'Privacy',
                         subtitle: 'Data stays on this device',
                         onTap: _showPrivacyDialog,
-                      ),                       const _Divider(),
+                      ),
+                      const _Divider(),
                       _ActionSetting(
                         icon: CupertinoIcons.info_circle,
                         title: 'About',
@@ -265,7 +261,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 18),
+                  const SizedBox(height: 14),
                   _SettingsGroup(
                     title: 'DATA',
                     children: [
@@ -274,19 +270,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'Reset Application',
                         subtitle: 'Clear all data and start fresh',
                         onTap: () async {
-                          showCupertinoDialog<void>(
+                          showDialog<void>(
                             context: context,
-                            builder: (dialogContext) => CupertinoAlertDialog(
-                              title: const Text("Reset App?"),
-                              content: const Text("This will clear all your sleep history, dream notes, and goals. This cannot be undone."),
+                            builder: (dialogContext) => AlertDialog(
+                              backgroundColor: surface,
+                              title: Text("Reset App?", style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                              content: Text("This will clear all your sleep history, dream notes, and goals. This cannot be undone.", style: bodyStyle(fontSize: 10, color: textMid)),
                               actions: [
-                                CupertinoDialogAction(
-                                  child: const Text("Cancel"),
+                                NesButton(
+                                  type: NesButtonType.normal,
                                   onPressed: () => Navigator.of(dialogContext).pop(),
+                                  child: Text("Cancel", style: bodyStyle(fontSize: 10, color: Colors.black)),
                                 ),
-                                CupertinoDialogAction(
-                                  isDestructiveAction: true,
-                                  child: const Text("Reset"),
+                                NesButton(
+                                  type: NesButtonType.error,
                                   onPressed: () async {
                                     final storage = HiveStorage();
                                     await storage.saveSetting('onboarding_complete', false);
@@ -294,7 +291,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                     await storage.saveSetting('dream_notes_list', null);
                                     await storage.saveSetting('alarm_config', null);
                                     await storage.saveSetting('sleep_goal', null);
-                                    // Reset in-memory provider state
                                     if (context.mounted) {
                                       Provider.of<SleepProvider>(context, listen: false).resetState();
                                       Provider.of<AlarmProvider>(context, listen: false).resetState();
@@ -302,6 +298,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);
                                     }
                                   },
+                                  child: Text("Reset", style: bodyStyle(fontSize: 10)),
                                 ),
                               ],
                             ),
@@ -331,70 +328,33 @@ class _ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      minimumSize: Size.zero,
+    return NesButton(
+      type: NesButtonType.normal,
       onPressed: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: surface.withValues(alpha: 0.9),
-          borderRadius: BorderRadius.circular(26),
-          border: Border.all(color: textDark.withValues(alpha: 0.08)),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 62,
-              height: 62,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: LinearGradient(
-                  colors: [primary, accent],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
-              ),
-              child: const Icon(
-                CupertinoIcons.person_fill,
-                color: Colors.white,
-                size: 30,
-              ),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: primary,
+              border: Border.all(color: Colors.white, width: 2),
             ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: headingStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    workspaceName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: bodyStyle(
-                      color: textMid,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+            child: const Icon(CupertinoIcons.person_fill, color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: bodyStyle(fontSize: 12, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
+                const SizedBox(height: 2),
+                Text(workspaceName, style: bodyStyle(fontSize: 8, color: textMid), maxLines: 1, overflow: TextOverflow.ellipsis),
+              ],
             ),
-             Icon(
-              CupertinoIcons.chevron_forward,
-              color: textMid,
-              size: 18,
-            ),
-          ],
-        ),
+          ),
+          Icon(CupertinoIcons.chevron_forward, color: textMid, size: 14),
+        ],
       ),
     );
   }
@@ -408,25 +368,13 @@ class _SettingsGroup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(18),
-      decoration: BoxDecoration(
-        color: surface.withValues(alpha: 0.88),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: textDark.withValues(alpha: 0.08)),
-      ),
+    return NesContainer(
+      padding: const EdgeInsets.all(12),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            title,
-            style: bodyStyle(
-              fontSize: 13,
-              color: textMid,
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-          const SizedBox(height: 14),
+          Text(title, style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
           ...children,
         ],
       ),
@@ -449,47 +397,32 @@ class _ActionSetting extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoButton(
-      padding: EdgeInsets.zero,
-      minimumSize: Size.zero,
+    return NesButton(
+      type: NesButtonType.normal,
       onPressed: onTap,
       child: Row(
         children: [
           Container(
-            width: 38,
-            height: 38,
+            width: 32,
+            height: 32,
             decoration: BoxDecoration(
-              color: primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(14),
+              color: primary.withValues(alpha: 0.2),
+              border: Border.all(color: primary, width: 1),
             ),
-            child: Icon(icon, color: primary, size: 20),
+            child: Icon(icon, color: primary, size: 16),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: 10),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: bodyStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                ),
+                Text(title, style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis),
                 const SizedBox(height: 2),
-                Text(
-                  subtitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: bodyStyle(
-                    fontSize: 13,
-                    color: textMid,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                Text(subtitle, style: bodyStyle(fontSize: 8, color: textMid), maxLines: 1, overflow: TextOverflow.ellipsis),
               ],
             ),
           ),
-           Icon(CupertinoIcons.chevron_forward, color: textMid, size: 18),
+          Icon(CupertinoIcons.chevron_forward, color: textMid, size: 14),
         ],
       ),
     );
@@ -517,25 +450,15 @@ class _SwitchSetting extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                title,
-                style: bodyStyle(fontSize: 16, fontWeight: FontWeight.w600),
-              ),
+              Text(title, style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold)),
               if (subtitle != null) ...[
                 const SizedBox(height: 2),
-                Text(
-                  subtitle!,
-                  style: bodyStyle(fontSize: 13, color: textMid, fontWeight: FontWeight.w500),
-                ),
+                Text(subtitle!, style: bodyStyle(fontSize: 8, color: textMid)),
               ],
             ],
           ),
         ),
-        CupertinoSwitch(
-          value: value,
-          activeTrackColor: primary,
-          onChanged: onChanged,
-        ),
+        Switch(value: value, activeTrackColor: primary, activeThumbColor: Colors.white, onChanged: onChanged),
       ],
     );
   }
@@ -547,8 +470,8 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      child: Container(height: 1, color: textDark.withValues(alpha: 0.07)),
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      child: Container(height: 1, color: const Color(0xff808080).withValues(alpha: 0.3)),
     );
   }
 }

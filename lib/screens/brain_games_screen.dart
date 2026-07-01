@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:nes_ui/nes_ui.dart';
 import '../themes/app_theme.dart';
 import '../widgets/ambient_background.dart';
 import '../widgets/glass_card.dart';
@@ -28,31 +29,15 @@ class _BrainGamesScreenState extends State<BrainGamesScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    Text(
-                      'Brain Games',
-                      style: headingStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w800,
-                        color: textDark,
-                      ),
-                    ),
+                    Text('BRAIN GAMES', style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const Spacer(),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        color: Colors.amber.withValues(alpha: 0.15),
-                        borderRadius: BorderRadius.circular(12),
+                        color: const Color(0xfff7d51d).withValues(alpha: 0.2),
+                        border: Border.all(color: const Color(0xfff7d51d), width: 1),
                       ),
-                      child: Row(
-                        children: [
-                          const Icon(CupertinoIcons.bolt_fill, color: Colors.amber, size: 14),
-                          const SizedBox(width: 4),
-                          Text(
-                            'Train Mind',
-                            style: bodyStyle(color: Colors.amber, fontSize: 11, fontWeight: FontWeight.w700),
-                          ),
-                        ],
-                      ),
+                      child: Text('TRAIN MIND', style: bodyStyle(color: const Color(0xfff7d51d), fontSize: 8, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),
@@ -64,109 +49,31 @@ class _BrainGamesScreenState extends State<BrainGamesScreen> {
                   padding: EdgeInsets.fromLTRB(20, 8, 20, 100 + MediaQuery.of(context).padding.bottom),
                   physics: const BouncingScrollPhysics(),
                   children: [
-                    _buildGameCard(
-                      title: 'Memory Match',
-                      subtitle: 'Find matching pairs',
-                      icon: CupertinoIcons.square_grid_2x2,
-                      color: Colors.purple,
-                      onTap: () => _navigateToGame(const MemoryMatchGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Color Reaction',
-                      subtitle: 'Test your reflexes',
-                      icon: CupertinoIcons.paintbrush,
-                      color: Colors.red,
-                      onTap: () => _navigateToGame(const ColorReactionGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Word Scramble',
-                      subtitle: 'Unscramble the letters',
-                      icon: CupertinoIcons.textformat_abc,
-                      color: Colors.green,
-                      onTap: () => _navigateToGame(const WordScrambleGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Math Challenge',
-                      subtitle: 'Quick mental math',
-                      icon: CupertinoIcons.sum,
-                      color: Colors.orange,
-                      onTap: () => _navigateToGame(const MathChallengeGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Simon Says',
-                      subtitle: 'Repeat the pattern',
-                      icon: CupertinoIcons.play_circle_fill,
-                      color: Colors.teal,
-                      onTap: () => _navigateToGame(const SimonSaysGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Tic Tac Toe',
-                      subtitle: 'Classic strategy game',
-                      icon: CupertinoIcons.xmark,
-                      color: Colors.pink,
-                      onTap: () => _navigateToGame(const TicTacToeGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Bubble Pop',
-                      subtitle: 'Tap targets quickly',
-                      icon: CupertinoIcons.circle_grid_3x3,
-                      color: Colors.cyan,
-                      onTap: () => _navigateToGame(const BubblePopGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Typing Speed',
-                      subtitle: 'Type words fast',
-                      icon: CupertinoIcons.keyboard,
-                      color: Colors.indigo,
-                      onTap: () => _navigateToGame(const TypingSpeedGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Puzzle Slide',
-                      subtitle: 'Arrange numbers 1-15',
-                      icon: CupertinoIcons.square_grid_2x2,
-                      color: Colors.brown,
-                      onTap: () => _navigateToGame(const PuzzleSlideGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Number Memory',
-                      subtitle: 'Remember the sequence',
-                      icon: CupertinoIcons.eye_fill,
-                      color: Colors.deepPurple,
-                      onTap: () => _navigateToGame(const NumberMemoryGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Color Catch',
-                      subtitle: 'Catch falling colors',
-                      icon: CupertinoIcons.arrow_down_circle_fill,
-                      color: Colors.tealAccent,
-                      onTap: () => _navigateToGame(const ColorCatchGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Word Chain',
-                      subtitle: 'Connect the words',
-                      icon: CupertinoIcons.link,
-                      color: Colors.lightBlue,
-                      onTap: () => _navigateToGame(const WordChainGame()),
-                    ),
-                    const SizedBox(height: 12),
-                    _buildGameCard(
-                      title: 'Rapid Tap',
-                      subtitle: 'Tap as fast as you can',
-                      icon: CupertinoIcons.hand_raised_fill,
-                      color: Colors.redAccent,
-                      onTap: () => _navigateToGame(const RapidTapGame()),
-                    ),
+                    _buildGameCard(title: 'Memory Match', subtitle: 'Find matching pairs', icon: CupertinoIcons.square_grid_2x2, color: const Color(0xff92cc41), onTap: () => _navigateToGame(const MemoryMatchGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Color Reaction', subtitle: 'Test your reflexes', icon: CupertinoIcons.paintbrush, color: accent, onTap: () => _navigateToGame(const ColorReactionGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Word Scramble', subtitle: 'Unscramble the letters', icon: CupertinoIcons.textformat_abc, color: const Color(0xff92cc41), onTap: () => _navigateToGame(const WordScrambleGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Math Challenge', subtitle: 'Quick mental math', icon: CupertinoIcons.sum, color: const Color(0xfff7d51d), onTap: () => _navigateToGame(const MathChallengeGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Simon Says', subtitle: 'Repeat the pattern', icon: CupertinoIcons.play_circle_fill, color: primary, onTap: () => _navigateToGame(const SimonSaysGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Tic Tac Toe', subtitle: 'Classic strategy game', icon: CupertinoIcons.xmark, color: const Color(0xffe76e55), onTap: () => _navigateToGame(const TicTacToeGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Bubble Pop', subtitle: 'Tap targets quickly', icon: CupertinoIcons.circle_grid_3x3, color: const Color(0xff92cc41), onTap: () => _navigateToGame(const BubblePopGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Typing Speed', subtitle: 'Type words fast', icon: CupertinoIcons.keyboard, color: const Color(0xff209cee), onTap: () => _navigateToGame(const TypingSpeedGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Puzzle Slide', subtitle: 'Arrange numbers 1-15', icon: CupertinoIcons.square_grid_2x2, color: const Color(0xfff7d51d), onTap: () => _navigateToGame(const PuzzleSlideGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Number Memory', subtitle: 'Remember the sequence', icon: CupertinoIcons.eye_fill, color: const Color(0xffe76e55), onTap: () => _navigateToGame(const NumberMemoryGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Color Catch', subtitle: 'Catch falling colors', icon: CupertinoIcons.arrow_down_circle_fill, color: primary, onTap: () => _navigateToGame(const ColorCatchGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Word Chain', subtitle: 'Connect the words', icon: CupertinoIcons.link, color: const Color(0xff92cc41), onTap: () => _navigateToGame(const WordChainGame())),
+                    const SizedBox(height: 8),
+                    _buildGameCard(title: 'Rapid Tap', subtitle: 'Tap as fast as you can', icon: CupertinoIcons.hand_raised_fill, color: accent, onTap: () => _navigateToGame(const RapidTapGame())),
                   ],
                 ),
               ),
@@ -179,52 +86,38 @@ class _BrainGamesScreenState extends State<BrainGamesScreen> {
 
   void _navigateToGame(Widget game) {
     Navigator.of(context).push(
-      CupertinoPageRoute(builder: (context) => game),
+      MaterialPageRoute(builder: (context) => game),
     );
   }
 
-  Widget _buildGameCard({
-    required String title,
-    required String subtitle,
-    required IconData icon,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
+  Widget _buildGameCard({required String title, required String subtitle, required IconData icon, required Color color, required VoidCallback onTap}) {
     return GestureDetector(
       onTap: onTap,
       child: glassCard(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(14),
         child: Row(
           children: [
             Container(
-              width: 56,
-              height: 56,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [color, color.withValues(alpha: 0.7)],
-                ),
-                borderRadius: BorderRadius.circular(16),
+                color: color,
+                border: Border.all(color: Colors.white, width: 1),
               ),
-              child: Icon(icon, color: Colors.white, size: 26),
+              child: Icon(icon, color: Colors.white, size: 22),
             ),
-            const SizedBox(width: 16),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: headingStyle(fontSize: 17, fontWeight: FontWeight.w700),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: bodyStyle(color: textMid, fontSize: 13, fontWeight: FontWeight.w500),
-                  ),
+                  Text(title, style: bodyStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 2),
+                  Text(subtitle, style: bodyStyle(fontSize: 8, color: textMid)),
                 ],
               ),
             ),
-            Icon(CupertinoIcons.chevron_right, color: textMid, size: 18),
+            Icon(CupertinoIcons.chevron_right, color: textMid, size: 14),
           ],
         ),
       ),
@@ -232,7 +125,7 @@ class _BrainGamesScreenState extends State<BrainGamesScreen> {
   }
 }
 
-// ================= MEMORY MATCH GAME =================
+// ================= MEMORY MATCH GAME (NES style) =================
 class MemoryMatchGame extends StatefulWidget {
   const MemoryMatchGame({super.key});
 
@@ -309,15 +202,11 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Memory Match', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('MEMORY MATCH', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('Moves: $_moves', style: bodyStyle(color: textMid, fontSize: 14)),
+                    Text('Moves: $_moves', style: bodyStyle(fontSize: 8, color: textMid)),
                   ],
                 ),
               ),
@@ -325,13 +214,13 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: glassCard(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(12),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(CupertinoIcons.star_fill, color: Colors.amber, size: 24),
+                        const Icon(CupertinoIcons.star_fill, color: Color(0xfff7d51d), size: 20),
                         const SizedBox(width: 8),
-                        Text('Completed in $_moves moves!', style: headingStyle(fontSize: 16, fontWeight: FontWeight.w700)),
+                        Text('Completed in $_moves moves!', style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -341,11 +230,7 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: GridView.builder(
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      mainAxisSpacing: 10,
-                      crossAxisSpacing: 10,
-                    ),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, mainAxisSpacing: 8, crossAxisSpacing: 8),
                     itemCount: 16,
                     itemBuilder: (context, index) {
                       return GestureDetector(
@@ -353,27 +238,13 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           decoration: BoxDecoration(
-                            color: _matched[index]
-                                ? Colors.green.withValues(alpha: 0.3)
-                                : _revealed[index]
-                                    ? surface
-                                    : primary.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: _matched[index]
-                                  ? Colors.green
-                                  : _revealed[index]
-                                      ? Colors.white24
-                                      : Colors.white10,
-                            ),
+                            color: _matched[index] ? const Color(0xff92cc41).withValues(alpha: 0.3) : _revealed[index] ? surface : primary.withValues(alpha: 0.2),
+                            border: Border.all(color: _matched[index] ? const Color(0xff92cc41) : _revealed[index] ? Colors.white24 : Colors.white10, width: 2),
                           ),
                           child: Center(
                             child: _revealed[index] || _matched[index]
-                                ? Text(
-                                    _symbols[index],
-                                    style: const TextStyle(fontSize: 28),
-                                  )
-                                : Icon(CupertinoIcons.question, color: textMid, size: 24),
+                                ? Text(_symbols[index], style: const TextStyle(fontSize: 24))
+                                : Icon(CupertinoIcons.question, color: textMid, size: 20),
                           ),
                         ),
                       );
@@ -384,22 +255,9 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
               if (_gameComplete)
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () => setState(() => _initGame()),
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [primary, accent]),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Center(
-                        child: Text('Play Again', style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-                      ),
-                    ),
-                  ),
+                  child: NesButton(type: NesButtonType.primary, onPressed: () => setState(() => _initGame()), child: const Text('PLAY AGAIN')),
                 ),
-              SizedBox(height: 80 + MediaQuery.of(context).padding.bottom),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -408,7 +266,7 @@ class _MemoryMatchGameState extends State<MemoryMatchGame> {
   }
 }
 
-// ================= COLOR REACTION GAME =================
+// ================= COLOR REACTION GAME (NES style) =================
 class ColorReactionGame extends StatefulWidget {
   const ColorReactionGame({super.key});
 
@@ -417,7 +275,7 @@ class ColorReactionGame extends StatefulWidget {
 }
 
 class _ColorReactionGameState extends State<ColorReactionGame> {
-  Color _backgroundColor = Colors.grey;
+  Color _backgroundColor = const Color(0xff808080);
   String _text = 'Tap when GREEN';
   bool _waiting = false;
   bool _started = false;
@@ -427,7 +285,7 @@ class _ColorReactionGameState extends State<ColorReactionGame> {
 
   void _startGame() {
     setState(() {
-      _backgroundColor = Colors.red;
+      _backgroundColor = accent;
       _text = 'Wait for green...';
       _waiting = true;
       _started = false;
@@ -439,7 +297,7 @@ class _ColorReactionGameState extends State<ColorReactionGame> {
     Future.delayed(Duration(milliseconds: delay), () {
       if (mounted && _waiting) {
         setState(() {
-          _backgroundColor = Colors.green;
+          _backgroundColor = const Color(0xff92cc41);
           _text = 'TAP NOW!';
           _started = true;
           _startTime = DateTime.now();
@@ -457,7 +315,7 @@ class _ColorReactionGameState extends State<ColorReactionGame> {
     if (_started && _startTime != null) {
       final reactionTime = DateTime.now().difference(_startTime!).inMilliseconds;
       setState(() {
-        _backgroundColor = Colors.grey;
+        _backgroundColor = const Color(0xff808080);
         _waiting = false;
         _started = false;
         _attempts++;
@@ -470,7 +328,7 @@ class _ColorReactionGameState extends State<ColorReactionGame> {
       });
     } else if (_waiting && !_started) {
       setState(() {
-        _backgroundColor = Colors.orange;
+        _backgroundColor = const Color(0xfff7d51d);
         _text = 'Too early! Tap to retry';
         _waiting = false;
       });
@@ -490,28 +348,21 @@ class _ColorReactionGameState extends State<ColorReactionGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Icon(CupertinoIcons.chevron_left, color: Colors.white, size: 28),
-                    ),
-                    Text('Color Reaction', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.white)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('COLOR REACTION', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xffffffff))),
                     const Spacer(),
-                    if (_bestTime < 999)
-                      Text('Best: ${_bestTime}ms', style: bodyStyle(color: Colors.white, fontSize: 14)),
+                    if (_bestTime < 999) Text('Best: ${_bestTime}ms', style: bodyStyle(fontSize: 8, color: const Color(0xffffffff), fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
               const Spacer(),
-              Center(
-                child: Column(
-                  children: [
-                    Text(_text, style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.white)),
-                    const SizedBox(height: 16),
-                    Text('Attempts: $_attempts', style: bodyStyle(color: Colors.white70, fontSize: 14)),
-                  ],
-                ),
+              Column(
+                children: [
+                  Text(_text, style: headingStyle(fontSize: 18, fontWeight: FontWeight.bold, color: const Color(0xffffffff)), textAlign: TextAlign.center),
+                  const SizedBox(height: 16),
+                  Text('Attempts: $_attempts', style: bodyStyle(fontSize: 10, color: const Color(0xffffffff).withValues(alpha: 0.7))),
+                ],
               ),
               const Spacer(),
             ],
@@ -522,7 +373,7 @@ class _ColorReactionGameState extends State<ColorReactionGame> {
   }
 }
 
-// ================= WORD SCRAMBLE GAME =================
+// ================= WORD SCRAMBLE GAME (NES style) =================
 class WordScrambleGame extends StatefulWidget {
   const WordScrambleGame({super.key});
 
@@ -561,14 +412,12 @@ class _WordScrambleGameState extends State<WordScrambleGame> {
     setState(() {
       if (answer == _currentWord) {
         _score += 10;
-        _feedback = 'Correct!';
+        _feedback = 'CORRECT!';
         Future.delayed(const Duration(seconds: 1), () {
-          if (mounted) {
-            setState(() => _nextWord());
-          }
+          if (mounted) setState(() => _nextWord());
         });
       } else {
-        _feedback = 'Try again!';
+        _feedback = 'TRY AGAIN!';
       }
     });
   }
@@ -585,66 +434,34 @@ class _WordScrambleGameState extends State<WordScrambleGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Word Scramble', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('WORD SCRAMBLE', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('Score: $_score', style: bodyStyle(color: Colors.green, fontSize: 14, fontWeight: FontWeight.w700)),
+                    Text('Score: $_score', style: bodyStyle(fontSize: 10, color: const Color(0xff92cc41), fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
               const SizedBox(height: 60),
-              Text('Unscramble the word:', style: bodyStyle(color: textMid, fontSize: 16)),
-              const SizedBox(height: 20),
-              Text(
-                _scrambled,
-                style: headingStyle(fontSize: 40, fontWeight: FontWeight.w800, color: Colors.white),
-              ),
-              const SizedBox(height: 40),
+              Text('Unscramble the word:', style: bodyStyle(fontSize: 10, color: textMid)),
+              const SizedBox(height: 16),
+              Text(_scrambled, style: headingStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 32),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
-                child: CupertinoTextField(
+                child: TextField(
                   controller: _controller,
-                  placeholder: 'Type your answer',
-                  placeholderStyle: bodyStyle(color: textMid),
-                  style: bodyStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  decoration: const InputDecoration(labelText: 'Type your answer'),
                   textAlign: TextAlign.center,
-                  decoration: BoxDecoration(
-                    color: surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.white10),
-                  ),
-                  padding: const EdgeInsets.all(16),
+                  style: const TextStyle(fontSize: 14),
                   onSubmitted: (_) => _checkAnswer(),
                 ),
               ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
               if (_feedback.isNotEmpty)
-                Text(_feedback, style: bodyStyle(
-                  color: _feedback == 'Correct!' ? Colors.green : Colors.red,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w700,
-                )),
-              const SizedBox(height: 20),
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: _checkAnswer,
-                child: Container(
-                  width: 200,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [primary, accent]),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Center(
-                    child: Text('Submit', style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-                  ),
-                ),
-              ),
+                Text(_feedback, style: bodyStyle(color: _feedback == 'CORRECT!' ? const Color(0xff92cc41) : accent, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
+              NesButton(type: NesButtonType.primary, onPressed: _checkAnswer, child: const Text('SUBMIT')),
             ],
           ),
         ),
@@ -653,7 +470,7 @@ class _WordScrambleGameState extends State<WordScrambleGame> {
   }
 }
 
-// ================= MATH CHALLENGE GAME =================
+// ================= MATH CHALLENGE GAME (NES style) =================
 class MathChallengeGame extends StatefulWidget {
   const MathChallengeGame({super.key});
 
@@ -716,7 +533,7 @@ class _MathChallengeGameState extends State<MathChallengeGame> {
       if (answer == _correctAnswer) {
         _score += 10 + _streak * 2;
         _streak++;
-        _feedback = _streak >= 3 ? '🔥 $_streak Streak!' : 'Correct!';
+        _feedback = _streak >= 3 ? '🔥 $_streak Streak!' : 'CORRECT!';
       } else {
         _streak = 0;
         _feedback = 'Wrong! Answer: $_correctAnswer';
@@ -739,15 +556,11 @@ class _MathChallengeGameState extends State<MathChallengeGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Math Challenge', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('MATH CHALLENGE', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('Score: $_score', style: bodyStyle(color: Colors.orange, fontSize: 14, fontWeight: FontWeight.w700)),
+                    Text('Score: $_score', style: bodyStyle(fontSize: 10, color: const Color(0xfff7d51d), fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -755,54 +568,32 @@ class _MathChallengeGameState extends State<MathChallengeGame> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('$_num1', style: headingStyle(fontSize: 48, fontWeight: FontWeight.w800)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text(_operator, style: headingStyle(fontSize: 40, fontWeight: FontWeight.w600, color: primary)),
-                  ),
-                  Text('$_num2', style: headingStyle(fontSize: 48, fontWeight: FontWeight.w800)),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Text('=', style: headingStyle(fontSize: 40, fontWeight: FontWeight.w600, color: textMid)),
-                  ),
+                  Text('$_num1', style: headingStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text(_operator, style: headingStyle(fontSize: 28, fontWeight: FontWeight.bold, color: primary))),
+                  Text('$_num2', style: headingStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                  Padding(padding: const EdgeInsets.symmetric(horizontal: 12), child: Text('=', style: headingStyle(fontSize: 28, fontWeight: FontWeight.bold, color: textMid))),
                   Container(
-                    width: 70,
-                    height: 70,
-                    decoration: BoxDecoration(
-                      color: surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    child: Center(
-                      child: Text('?', style: headingStyle(fontSize: 32, fontWeight: FontWeight.w700, color: textMid)),
-                    ),
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(color: surface, border: Border.all(color: Colors.white10, width: 2)),
+                    child: Center(child: Text('?', style: headingStyle(fontSize: 24, fontWeight: FontWeight.bold, color: textMid))),
                   ),
                 ],
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
               if (_feedback.isNotEmpty)
-                Text(_feedback, style: bodyStyle(
-                  color: _feedback.contains('Correct') || _feedback.contains('Streak') ? Colors.green : Colors.red,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w700,
-                )),
-              const SizedBox(height: 30),
+                Text(_feedback, style: bodyStyle(color: _feedback.contains('Correct') || _feedback.contains('Streak') ? const Color(0xff92cc41) : accent, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 24),
               Wrap(
-                spacing: 16,
-                runSpacing: 16,
+                spacing: 12,
+                runSpacing: 12,
                 children: _options.map((opt) => GestureDetector(
                   onTap: () => _checkAnswer(opt),
                   child: Container(
-                    width: 80,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      color: surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    child: Center(
-                       child: Text('$opt', style: headingStyle(fontSize: 24, fontWeight: FontWeight.w700)),
-                    ),
+                    width: 70,
+                    height: 50,
+                    decoration: BoxDecoration(color: surface, border: Border.all(color: Colors.white10, width: 2)),
+                    child: Center(child: Text('$opt', style: headingStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                   ),
                 )).toList(),
               ),
@@ -814,7 +605,7 @@ class _MathChallengeGameState extends State<MathChallengeGame> {
   }
 }
 
-// ================= SIMON SAYS GAME =================
+// ================= SIMON SAYS GAME (NES style) =================
 class SimonSaysGame extends StatefulWidget {
   const SimonSaysGame({super.key});
 
@@ -823,7 +614,7 @@ class SimonSaysGame extends StatefulWidget {
 }
 
 class _SimonSaysGameState extends State<SimonSaysGame> {
-  final List<Color> _colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow];
+  final List<Color> _colors = [accent, primary, const Color(0xff92cc41), const Color(0xfff7d51d)];
   List<int> _sequence = [];
   List<int> _userInput = [];
   int _level = 0;
@@ -868,12 +659,7 @@ class _SimonSaysGameState extends State<SimonSaysGame> {
     }
     
     Future.delayed(Duration(milliseconds: 600 * (_sequence.length + 1)), () {
-      if (mounted) {
-        setState(() {
-          _showingSequence = false;
-          _feedback = 'Your turn!';
-        });
-      }
+      if (mounted) setState(() { _showingSequence = false; _feedback = 'Your turn!'; });
     });
   }
 
@@ -890,10 +676,7 @@ class _SimonSaysGameState extends State<SimonSaysGame> {
     _userInput.add(index);
     
     if (_userInput.last != _sequence[_userInput.length - 1]) {
-      setState(() {
-        _gameOver = true;
-        _feedback = 'Game Over! Level: $_level';
-      });
+      setState(() { _gameOver = true; _feedback = 'Game Over! Level: $_level'; });
       return;
     }
     
@@ -917,30 +700,22 @@ class _SimonSaysGameState extends State<SimonSaysGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Simon Says', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('SIMON SAYS', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('Level: $_level', style: bodyStyle(color: Colors.teal, fontSize: 14, fontWeight: FontWeight.w700)),
+                    Text('Level: $_level', style: bodyStyle(fontSize: 10, color: primary, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
               const Spacer(),
-              Text(_feedback, style: bodyStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 40),
+              Text(_feedback, style: bodyStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 32),
               SizedBox(
-                width: 250,
-                height: 250,
+                width: 220,
+                height: 220,
                 child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    mainAxisSpacing: 10,
-                    crossAxisSpacing: 10,
-                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 8, crossAxisSpacing: 8),
                   itemCount: 4,
                   itemBuilder: (context, index) {
                     final isActive = _activeColor == index;
@@ -950,14 +725,7 @@ class _SimonSaysGameState extends State<SimonSaysGame> {
                         duration: const Duration(milliseconds: 150),
                         decoration: BoxDecoration(
                           color: isActive ? _colors[index] : _colors[index].withValues(alpha: 0.3),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: isActive ? Colors.white : Colors.white24,
-                            width: isActive ? 3 : 1,
-                          ),
-                          boxShadow: isActive ? [
-                            BoxShadow(color: _colors[index], blurRadius: 20, spreadRadius: 5),
-                          ] : [],
+                          border: Border.all(color: isActive ? Colors.white : Colors.white24, width: isActive ? 3 : 1),
                         ),
                       ),
                     );
@@ -968,22 +736,9 @@ class _SimonSaysGameState extends State<SimonSaysGame> {
               if (_gameOver)
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () => setState(() => _startGame()),
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(colors: [primary, accent]),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Center(
-                        child: Text('Play Again', style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-                      ),
-                    ),
-                  ),
+                  child: NesButton(type: NesButtonType.primary, onPressed: () => setState(() => _startGame()), child: const Text('PLAY AGAIN')),
                 ),
-              SizedBox(height: 80 + MediaQuery.of(context).padding.bottom),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -992,7 +747,7 @@ class _SimonSaysGameState extends State<SimonSaysGame> {
   }
 }
 
-// ================= TIC TAC TOE GAME =================
+// ================= TIC TAC TOE GAME (NES style) =================
 class TicTacToeGame extends StatefulWidget {
   const TicTacToeGame({super.key});
 
@@ -1024,17 +779,13 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
     ];
     
     for (final pattern in winPatterns) {
-      if (_board[pattern[0]] != '' &&
-          _board[pattern[0]] == _board[pattern[1]] &&
-          _board[pattern[0]] == _board[pattern[2]]) {
+      if (_board[pattern[0]] != '' && _board[pattern[0]] == _board[pattern[1]] && _board[pattern[0]] == _board[pattern[2]]) {
         setState(() => _winner = _board[pattern[0]]);
         return;
       }
     }
     
-    if (!_board.contains('')) {
-      setState(() => _isDraw = true);
-    }
+    if (!_board.contains('')) setState(() => _isDraw = true);
   }
 
   void _reset() {
@@ -1058,54 +809,35 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Tic Tac Toe', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('TIC TAC TOE', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Icon(_isXTurn ? CupertinoIcons.xmark : CupertinoIcons.circle, color: primary, size: 24),
+                    Icon(_isXTurn ? CupertinoIcons.xmark : CupertinoIcons.circle, color: primary, size: 20),
                   ],
                 ),
               ),
               const Spacer(),
               if (_winner.isNotEmpty)
-                Text('$_winner Wins!', style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.green))
+                Text('$_winner Wins!', style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color(0xff92cc41)))
               else if (_isDraw)
-                Text('Draw!', style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800, color: Colors.orange))
+                Text('Draw!', style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold, color: const Color(0xfff7d51d)))
               else
-                Text('${_isXTurn ? "X" : "O"} Turn', style: bodyStyle(color: textMid, fontSize: 18)),
-              const SizedBox(height: 30),
+                Text('${_isXTurn ? "X" : "O"} Turn', style: bodyStyle(fontSize: 12, color: textMid)),
+              const SizedBox(height: 24),
               SizedBox(
-                width: 280,
-                height: 280,
+                width: 240,
+                height: 240,
                 child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    mainAxisSpacing: 8,
-                    crossAxisSpacing: 8,
-                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, mainAxisSpacing: 6, crossAxisSpacing: 6),
                   itemCount: 9,
                   itemBuilder: (context, index) {
                     return GestureDetector(
                       onTap: () => _onTap(index),
                       child: Container(
-                        decoration: BoxDecoration(
-                          color: surface,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.white10),
-                        ),
+                        decoration: BoxDecoration(color: surface, border: Border.all(color: Colors.white10, width: 2)),
                         child: Center(
-                          child: Text(
-                            _board[index],
-                            style: headingStyle(
-                              fontSize: 36,
-                              fontWeight: FontWeight.w800,
-                              color: _board[index] == 'X' ? Colors.cyan : Colors.pink,
-                            ),
-                          ),
+                          child: Text(_board[index], style: headingStyle(fontSize: 28, fontWeight: FontWeight.bold, color: _board[index] == 'X' ? primary : accent)),
                         ),
                       ),
                     );
@@ -1115,22 +847,9 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
               const Spacer(),
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: _reset,
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [primary, accent]),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Center(
-                      child: Text('New Game', style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ),
+                child: NesButton(type: NesButtonType.primary, onPressed: _reset, child: const Text('NEW GAME')),
               ),
-              SizedBox(height: 80 + MediaQuery.of(context).padding.bottom),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -1139,7 +858,7 @@ class _TicTacToeGameState extends State<TicTacToeGame> {
   }
 }
 
-// ================= BUBBLE POP GAME =================
+// ================= BUBBLE POP GAME (NES style) =================
 class BubblePopGame extends StatefulWidget {
   const BubblePopGame({super.key});
 
@@ -1161,33 +880,19 @@ class _BubblePopGameState extends State<BubblePopGame> {
   }
 
   void _startGame() {
-    setState(() {
-      _score = 0;
-      _timeLeft = 30;
-      _bubbles = [];
-      _gameStarted = true;
-    });
+    setState(() { _score = 0; _timeLeft = 30; _bubbles = []; _gameStarted = true; });
     
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _timeLeft--;
-        // Decrement life of all bubbles each second
-        for (final b in _bubbles) {
-          b.life--;
-        }
+        for (final b in _bubbles) { b.life--; }
         _bubbles.removeWhere((b) => b.life <= 0);
-        if (_timeLeft <= 0) {
-          _endGame();
-        }
+        if (_timeLeft <= 0) _endGame();
       });
     });
     
     _spawnTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) {
-      if (mounted) {
-        setState(() {
-          _bubbles.add(_Bubble.random());
-        });
-      }
+      if (mounted) setState(() { _bubbles.add(_Bubble.random()); });
     });
   }
 
@@ -1198,10 +903,7 @@ class _BubblePopGameState extends State<BubblePopGame> {
   }
 
   void _popBubble(_Bubble bubble) {
-    setState(() {
-      _bubbles.remove(bubble);
-      _score += bubble.points;
-    });
+    setState(() { _bubbles.remove(bubble); _score += bubble.points; });
   }
 
   @override
@@ -1225,17 +927,13 @@ class _BubblePopGameState extends State<BubblePopGame> {
                     padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                     child: Row(
                       children: [
-                        CupertinoButton(
-                          padding: EdgeInsets.zero,
-                          minimumSize: const Size(44, 44),
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                        ),
-                        Text('Bubble Pop', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                        NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                        const SizedBox(width: 8),
+                        Text('BUBBLE POP', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                         const Spacer(),
-                        Text('$_score pts', style: bodyStyle(color: Colors.cyan, fontSize: 14, fontWeight: FontWeight.w700)),
-                        const SizedBox(width: 16),
-                        Text('$_timeLeft s', style: bodyStyle(color: _timeLeft < 10 ? Colors.red : Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+                        Text('$_score pts', style: bodyStyle(fontSize: 10, color: primary, fontWeight: FontWeight.bold)),
+                        const SizedBox(width: 12),
+                        Text('$_timeLeft s', style: bodyStyle(fontSize: 10, color: _timeLeft < 10 ? accent : Colors.white, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -1245,24 +943,9 @@ class _BubblePopGameState extends State<BubblePopGame> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            if (_score > 0)
-                              Text('Score: $_score', style: headingStyle(fontSize: 32, fontWeight: FontWeight.w800)),
+                            if (_score > 0) Text('Score: $_score', style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 20),
-                            CupertinoButton(
-                              padding: EdgeInsets.zero,
-                              onPressed: _startGame,
-                              child: Container(
-                                width: 200,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  gradient: LinearGradient(colors: [primary, accent]),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Center(
-                                  child: Text('Start Game', style: bodyStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
-                                ),
-                              ),
-                            ),
+                            NesButton(type: NesButtonType.primary, onPressed: _startGame, child: const Text('START GAME')),
                           ],
                         ),
                       ),
@@ -1281,20 +964,10 @@ class _BubblePopGameState extends State<BubblePopGame> {
                         width: bubble.radius * 2,
                         height: bubble.radius * 2,
                         decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          gradient: RadialGradient(
-                            colors: [
-                              bubble.color.withValues(alpha: 0.8),
-                              bubble.color.withValues(alpha: 0.4),
-                            ],
-                          ),
+                          color: bubble.color,
+                          border: Border.all(color: Colors.white, width: 2),
                         ),
-                        child: Center(
-                          child: Text(
-                            '${bubble.points}',
-                            style: bodyStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.w700),
-                          ),
-                        ),
+                        child: Center(child: Text('${bubble.points}', style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold))),
                       ),
                     ),
                   );
@@ -1315,30 +988,23 @@ class _Bubble {
   int points;
   int life;
 
-  _Bubble({
-    required this.x,
-    required this.y,
-    required this.radius,
-    required this.color,
-    required this.points,
-    required this.life,
-  });
+  _Bubble({required this.x, required this.y, required this.radius, required this.color, required this.points, required this.life});
 
   factory _Bubble.random() {
     final random = Random();
-    final colors = [Colors.cyan, Colors.pink, Colors.amber, Colors.purple, Colors.green];
+    final colors = [primary, accent, const Color(0xff92cc41), const Color(0xfff7d51d), const Color(0xff9badb7)];
     return _Bubble(
       x: random.nextDouble() * 300 + 40,
       y: random.nextDouble() * 400 + 80,
-      radius: 20 + random.nextDouble() * 20,
+      radius: 18 + random.nextDouble() * 16,
       color: colors[random.nextInt(colors.length)],
       points: random.nextInt(3) + 1,
-      life: 4, // Bubbles last 4 seconds before expiring
+      life: 4,
     );
   }
 }
 
-// ================= TYPING SPEED GAME =================
+// ================= TYPING SPEED GAME (NES style) =================
 class TypingSpeedGame extends StatefulWidget {
   const TypingSpeedGame({super.key});
 
@@ -1362,18 +1028,11 @@ class _TypingSpeedGameState extends State<TypingSpeedGame> {
   }
 
   void _startGame() {
-    setState(() {
-      _score = 0;
-      _timeLeft = 30;
-      _started = true;
-    });
+    setState(() { _score = 0; _timeLeft = 30; _started = true; });
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _timeLeft--;
-        if (_timeLeft <= 0) {
-          _timer?.cancel();
-          _started = false;
-        }
+        if (_timeLeft <= 0) { _timer?.cancel(); _started = false; }
       });
     });
   }
@@ -1385,12 +1044,8 @@ class _TypingSpeedGameState extends State<TypingSpeedGame> {
 
   void _checkInput(String value) {
     if (!_started) return;
-    
     setState(() {
-      if (value == _currentWord) {
-        _score += _currentWord.length * 2;
-        _nextWord();
-      }
+      if (value == _currentWord) { _score += _currentWord.length * 2; _nextWord(); }
     });
   }
 
@@ -1413,61 +1068,33 @@ class _TypingSpeedGameState extends State<TypingSpeedGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Typing Speed', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('TYPING SPEED', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('$_score pts', style: bodyStyle(color: Colors.indigo, fontSize: 14, fontWeight: FontWeight.w700)),
-                    const SizedBox(width: 16),
-                    Text('$_timeLeft s', style: bodyStyle(color: _timeLeft < 10 ? Colors.red : Colors.white, fontSize: 14)),
+                    Text('$_score pts', style: bodyStyle(fontSize: 10, color: primary, fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 12),
+                    Text('$_timeLeft s', style: bodyStyle(fontSize: 10, color: _timeLeft < 10 ? accent : Colors.white)),
                   ],
                 ),
               ),
               const Spacer(),
               if (!_started)
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: _startGame,
-                  child: Container(
-                    width: 200,
-                    height: 60,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [primary, accent]),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Center(
-                      child: Text('Start', style: bodyStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                )
+                NesButton(type: NesButtonType.primary, onPressed: _startGame, child: const Text('START'))
               else ...[
-                Text('Type this word:', style: bodyStyle(color: textMid, fontSize: 16)),
-                const SizedBox(height: 20),
-                Text(
-                  _currentWord,
-                  style: headingStyle(fontSize: 40, fontWeight: FontWeight.w800, color: Colors.white),
-                ),
-                const SizedBox(height: 30),
+                Text('Type this word:', style: bodyStyle(fontSize: 10, color: textMid)),
+                const SizedBox(height: 16),
+                Text(_currentWord, style: headingStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 24),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 40),
-                  child: CupertinoTextField(
+                  child: TextField(
                     controller: _controller,
                     onChanged: _checkInput,
-                    placeholder: 'Start typing...',
-                    placeholderStyle: bodyStyle(color: textMid),
-                    style: bodyStyle(fontSize: 24, fontWeight: FontWeight.w600),
+                    decoration: const InputDecoration(labelText: 'Start typing...', border: InputBorder.none),
                     textAlign: TextAlign.center,
+                    style: const TextStyle(fontSize: 18),
                     autofocus: true,
-                    decoration: BoxDecoration(
-                      color: surface,
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Colors.white10),
-                    ),
-                    padding: const EdgeInsets.all(16),
                   ),
                 ),
               ],
@@ -1480,7 +1107,7 @@ class _TypingSpeedGameState extends State<TypingSpeedGame> {
   }
 }
 
-// ================= PUZZLE SLIDE GAME =================
+// ================= PUZZLE SLIDE GAME (NES style) =================
 class PuzzleSlideGame extends StatefulWidget {
   const PuzzleSlideGame({super.key});
 
@@ -1517,12 +1144,10 @@ class _PuzzleSlideGameState extends State<PuzzleSlideGame> {
     final moves = <int>[];
     final row = emptyIndex ~/ 4;
     final col = emptyIndex % 4;
-    
     if (row > 0) moves.add(emptyIndex - 4);
     if (row < 3) moves.add(emptyIndex + 4);
     if (col > 0) moves.add(emptyIndex - 1);
     if (col < 3) moves.add(emptyIndex + 1);
-    
     return moves;
   }
 
@@ -1534,16 +1159,10 @@ class _PuzzleSlideGameState extends State<PuzzleSlideGame> {
 
   void _onTileTap(int index) {
     if (_solved) return;
-    
     final emptyIndex = _tiles.indexOf(0);
     final validMoves = _getValidMoves(emptyIndex);
-    
     if (validMoves.contains(index)) {
-      setState(() {
-        _swapTiles(emptyIndex, index);
-        _moves++;
-        _checkSolved();
-      });
+      setState(() { _swapTiles(emptyIndex, index); _moves++; _checkSolved(); });
     }
   }
 
@@ -1566,56 +1185,32 @@ class _PuzzleSlideGameState extends State<PuzzleSlideGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Puzzle Slide', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('PUZZLE SLIDE', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('$_moves moves', style: bodyStyle(color: Colors.brown, fontSize: 14, fontWeight: FontWeight.w700)),
+                    Text('$_moves moves', style: bodyStyle(fontSize: 10, color: const Color(0xfff7d51d), fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
               const Spacer(),
               if (_solved)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 20),
-                  child: Text('Solved in $_moves moves!', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700, color: Colors.green)),
-                ),
+                Padding(padding: const EdgeInsets.only(bottom: 16), child: Text('Solved in $_moves moves!', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold, color: const Color(0xff92cc41)))),
               SizedBox(
-                width: 280,
-                height: 280,
+                width: 240,
+                height: 240,
                 child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 4,
-                    crossAxisSpacing: 4,
-                  ),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 4, mainAxisSpacing: 3, crossAxisSpacing: 3),
                   itemCount: 16,
                   itemBuilder: (context, index) {
                     final value = _tiles[index];
                     if (value == 0) return const SizedBox();
-                    
                     return GestureDetector(
                       onTap: () => _onTileTap(index),
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 150),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [primary, accent],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                          ),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '$value',
-                            style: headingStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.white),
-                          ),
-                        ),
+                        decoration: BoxDecoration(color: primary, border: Border.all(color: Colors.white, width: 1)),
+                        child: Center(child: Text('$value', style: headingStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                       ),
                     );
                   },
@@ -1624,22 +1219,9 @@ class _PuzzleSlideGameState extends State<PuzzleSlideGame> {
               const Spacer(),
               Padding(
                 padding: const EdgeInsets.all(20),
-                child: CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () => setState(() => _initPuzzle()),
-                  child: Container(
-                    height: 50,
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(colors: [primary, accent]),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Center(
-                      child: Text('New Puzzle', style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                ),
+                child: NesButton(type: NesButtonType.primary, onPressed: () => setState(() => _initPuzzle()), child: const Text('NEW PUZZLE')),
               ),
-              SizedBox(height: 80 + MediaQuery.of(context).padding.bottom),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -1648,7 +1230,7 @@ class _PuzzleSlideGameState extends State<PuzzleSlideGame> {
   }
 }
 
-// ================= NUMBER MEMORY GAME =================
+// ================= NUMBER MEMORY GAME (NES style) =================
 class NumberMemoryGame extends StatefulWidget {
   const NumberMemoryGame({super.key});
 
@@ -1689,10 +1271,7 @@ class _NumberMemoryGameState extends State<NumberMemoryGame> {
     final idx = _userInput.length - 1;
     
     if (_userInput[idx] != _sequence[idx]) {
-      setState(() {
-        _gameOver = true;
-        _feedback = 'Game Over! Level: $_level';
-      });
+      setState(() { _gameOver = true; _feedback = 'Game Over! Level: $_level'; });
       return;
     }
     
@@ -1716,45 +1295,41 @@ class _NumberMemoryGameState extends State<NumberMemoryGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Number Memory', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('NUMBER MEMORY', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('Level: $_level', style: bodyStyle(color: Colors.deepPurple, fontSize: 14, fontWeight: FontWeight.w700)),
+                    Text('Level: $_level', style: bodyStyle(fontSize: 10, color: accent, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
               const Spacer(),
-              Text(_feedback, style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 20),
+              Text(_feedback, style: bodyStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 16),
               if (_showingSequence)
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: _sequence.map((n) => Padding(
-                    padding: const EdgeInsets.all(4),
+                    padding: const EdgeInsets.all(3),
                     child: Container(
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(color: primary, borderRadius: BorderRadius.circular(8)),
-                      child: Center(child: Text('$n', style: headingStyle(fontSize: 24, fontWeight: FontWeight.w700, color: Colors.white))),
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(color: primary, border: Border.all(color: Colors.white, width: 1)),
+                      child: Center(child: Text('$n', style: headingStyle(fontSize: 18, fontWeight: FontWeight.bold))),
                     ),
                   )).toList(),
                 )
               else
                 Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
+                  spacing: 6,
+                  runSpacing: 6,
                   children: List.generate(9, (i) => GestureDetector(
                     onTap: () => _onNumberTap(i + 1),
                     child: Container(
-                      width: 70,
-                      height: 70,
-                      decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white10)),
-                      child: Center(child: Text('${i + 1}', style: headingStyle(fontSize: 24, fontWeight: FontWeight.w700))),
+                      width: 60,
+                      height: 60,
+                      decoration: BoxDecoration(color: surface, border: Border.all(color: Colors.white10, width: 2)),
+                      child: Center(child: Text('${i + 1}', style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold))),
                     ),
                   )),
                 ),
@@ -1762,17 +1337,9 @@ class _NumberMemoryGameState extends State<NumberMemoryGame> {
               if (_gameOver)
                 Padding(
                   padding: const EdgeInsets.all(20),
-                  child: CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: () => setState(() { _level = 0; _gameOver = false; _nextLevel(); }),
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(gradient: LinearGradient(colors: [primary, accent]), borderRadius: BorderRadius.circular(16)),
-                      child: Center(child: Text('Play Again', style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700))),
-                    ),
-                  ),
+                  child: NesButton(type: NesButtonType.primary, onPressed: () => setState(() { _level = 0; _gameOver = false; _nextLevel(); }), child: const Text('PLAY AGAIN')),
                 ),
-              SizedBox(height: 80 + MediaQuery.of(context).padding.bottom),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -1781,7 +1348,7 @@ class _NumberMemoryGameState extends State<NumberMemoryGame> {
   }
 }
 
-// ================= COLOR CATCH GAME =================
+// ================= COLOR CATCH GAME (NES style) =================
 class ColorCatchGame extends StatefulWidget {
   const ColorCatchGame({super.key});
 
@@ -1790,7 +1357,7 @@ class ColorCatchGame extends StatefulWidget {
 }
 
 class _ColorCatchGameState extends State<ColorCatchGame> {
-  final List<Color> _colors = [Colors.red, Colors.blue, Colors.green, Colors.yellow];
+  final List<Color> _colors = [accent, primary, const Color(0xff92cc41), const Color(0xfff7d51d)];
   int _targetColor = 0;
   double _ballX = 150;
   double _ballY = 0;
@@ -1806,60 +1373,35 @@ class _ColorCatchGameState extends State<ColorCatchGame> {
   }
 
   void _startGame() {
-    setState(() {
-      _score = 0;
-      _timeLeft = 30;
-      _started = true;
-      _targetColor = Random().nextInt(4);
-    });
+    setState(() { _score = 0; _timeLeft = 30; _started = true; _targetColor = Random().nextInt(4); });
     
     _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (mounted) {
-        setState(() {
-          _ballY += 8;
-          if (_ballY > 600) {
-            _ballY = 0;
-            _ballX = Random().nextDouble() * 300 + 20;
-            _targetColor = Random().nextInt(4);
-          }
-        });
-      }
+      if (mounted) setState(() {
+        _ballY += 8;
+        if (_ballY > 600) { _ballY = 0; _ballX = Random().nextDouble() * 300 + 20; _targetColor = Random().nextInt(4); }
+      });
     });
     
     _gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _timeLeft--;
-        if (_timeLeft <= 0) _endGame();
-      });
+      setState(() { _timeLeft--; if (_timeLeft <= 0) _endGame(); });
     });
   }
 
   void _endGame() {
-    _timer?.cancel();
-    _gameTimer?.cancel();
+    _timer?.cancel(); _gameTimer?.cancel();
     setState(() => _started = false);
   }
 
   void _catchBall(int colorIndex) {
     if (!_started) return;
     setState(() {
-      if (colorIndex == _targetColor) {
-        _score += 10;
-        _ballY = 0;
-        _ballX = Random().nextDouble() * 300 + 20;
-        _targetColor = Random().nextInt(4);
-      } else {
-        _score = (_score - 5).clamp(0, 9999);
-      }
+      if (colorIndex == _targetColor) { _score += 10; _ballY = 0; _ballX = Random().nextDouble() * 300 + 20; _targetColor = Random().nextInt(4); }
+      else { _score = (_score - 5).clamp(0, 9999); }
     });
   }
 
   @override
-  void dispose() {
-    _timer?.cancel();
-    _gameTimer?.cancel();
-    super.dispose();
-  }
+  void dispose() { _timer?.cancel(); _gameTimer?.cancel(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -1873,37 +1415,29 @@ class _ColorCatchGameState extends State<ColorCatchGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Color Catch', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('COLOR CATCH', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('$_score pts', style: bodyStyle(color: Colors.tealAccent, fontSize: 14, fontWeight: FontWeight.w700)),
-                    const SizedBox(width: 16),
-                    Text('$_timeLeft s', style: bodyStyle(color: _timeLeft < 10 ? Colors.red : Colors.white, fontSize: 14)),
+                    Text('$_score pts', style: bodyStyle(fontSize: 10, color: primary, fontWeight: FontWeight.bold)),
+                    const SizedBox(width: 12),
+                    Text('$_timeLeft s', style: bodyStyle(fontSize: 10, color: _timeLeft < 10 ? accent : Colors.white)),
                   ],
                 ),
               ),
               if (_started) ...[
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text('Catch the ${_colors[_targetColor].toString().split('.').last} ball!', style: bodyStyle(color: _colors[_targetColor], fontSize: 16, fontWeight: FontWeight.w700)),
+                  child: Text('Catch the ${_colors[_targetColor].toString().split('.').last} ball!', style: bodyStyle(fontSize: 10, color: _colors[_targetColor], fontWeight: FontWeight.bold)),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 Expanded(
                   child: Stack(
                     children: [
                       Positioned(
                         left: _ballX,
                         top: _ballY,
-                        child: Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(shape: BoxShape.circle, color: _colors[_targetColor]),
-                        ),
+                        child: Container(width: 36, height: 36, decoration: BoxDecoration(color: _colors[_targetColor], border: Border.all(color: Colors.white, width: 2))),
                       ),
                     ],
                   ),
@@ -1914,29 +1448,15 @@ class _ColorCatchGameState extends State<ColorCatchGame> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: List.generate(4, (i) => GestureDetector(
                       onTap: () => _catchBall(i),
-                      child: Container(
-                        width: 70,
-                        height: 70,
-                        decoration: BoxDecoration(color: _colors[i], borderRadius: BorderRadius.circular(16)),
-                      ),
+                      child: Container(width: 60, height: 60, decoration: BoxDecoration(color: _colors[i], border: Border.all(color: Colors.white, width: 2))),
                     )),
                   ),
                 ),
               ] else ...[
                 const Spacer(),
-                if (_score > 0)
-                  Text('Final Score: $_score', style: headingStyle(fontSize: 32, fontWeight: FontWeight.w800)),
+                if (_score > 0) Text('Final Score: $_score', style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 20),
-                CupertinoButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: _startGame,
-                  child: Container(
-                    width: 200,
-                    height: 60,
-                    decoration: BoxDecoration(gradient: LinearGradient(colors: [primary, accent]), borderRadius: BorderRadius.circular(20)),
-                    child: Center(child: Text('Start Game', style: bodyStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))),
-                  ),
-                ),
+                NesButton(type: NesButtonType.primary, onPressed: _startGame, child: const Text('START GAME')),
                 const Spacer(),
               ],
             ],
@@ -1947,7 +1467,7 @@ class _ColorCatchGameState extends State<ColorCatchGame> {
   }
 }
 
-// ================= WORD CHAIN GAME =================
+// ================= WORD CHAIN GAME (NES style) =================
 class WordChainGame extends StatefulWidget {
   const WordChainGame({super.key});
 
@@ -1984,20 +1504,11 @@ class _WordChainGameState extends State<WordChainGame> {
       return;
     }
     
-    setState(() {
-      _chain.add(word);
-      _currentWord = word;
-      _score += word.length;
-      _feedback = '';
-      _controller.clear();
-    });
+    setState(() { _chain.add(word); _currentWord = word; _score += word.length; _feedback = ''; _controller.clear(); });
   }
 
   @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  void dispose() { _controller.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -2011,65 +1522,48 @@ class _WordChainGameState extends State<WordChainGame> {
                 padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    Text('Word Chain', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('WORD CHAIN', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                     const Spacer(),
-                    Text('Score: $_score', style: bodyStyle(color: Colors.lightBlue, fontSize: 14, fontWeight: FontWeight.w700)),
+                    Text('Score: $_score', style: bodyStyle(fontSize: 10, color: const Color(0xff92cc41), fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
               const SizedBox(height: 20),
-              Text('Last letter: ${_currentWord[_currentWord.length - 1].toUpperCase()}', style: bodyStyle(color: Colors.amber, fontSize: 16, fontWeight: FontWeight.w700)),
+              Text('Last letter: ${_currentWord[_currentWord.length - 1].toUpperCase()}', style: bodyStyle(fontSize: 12, color: const Color(0xfff7d51d), fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              Text('Current word:', style: bodyStyle(color: textMid, fontSize: 12)),
-              Text(_currentWord.toUpperCase(), style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-              const SizedBox(height: 16),
-              if (_feedback.isNotEmpty)
-                Text(_feedback, style: bodyStyle(color: Colors.red, fontSize: 14, fontWeight: FontWeight.w600)),
-              const SizedBox(height: 16),
+              Text('Current word:', style: bodyStyle(fontSize: 8, color: textMid)),
+              Text(_currentWord.toUpperCase(), style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
+              if (_feedback.isNotEmpty) Text(_feedback, style: bodyStyle(color: accent, fontSize: 10, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 12),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: CupertinoTextField(
+                child: TextField(
                   controller: _controller,
                   onSubmitted: (_) => _submitWord(),
-                  placeholder: 'Enter a word...',
-                  placeholderStyle: bodyStyle(color: textMid),
-                  style: bodyStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                  decoration: const InputDecoration(labelText: 'Enter a word...', border: InputBorder.none),
                   textAlign: TextAlign.center,
-                  decoration: BoxDecoration(color: surface, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.white10)),
-                  padding: const EdgeInsets.all(14),
+                  style: const TextStyle(fontSize: 14),
                 ),
               ),
-              const SizedBox(height: 12),
-              CupertinoButton(
-                padding: EdgeInsets.zero,
-                onPressed: _submitWord,
-                child: Container(
-                  width: 150,
-                  height: 44,
-                  decoration: BoxDecoration(gradient: LinearGradient(colors: [primary, accent]), borderRadius: BorderRadius.circular(12)),
-                  child: Center(child: Text('Submit', style: bodyStyle(color: Colors.white, fontWeight: FontWeight.w700))),
-                ),
-              ),
-              const SizedBox(height: 20),
+              const SizedBox(height: 10),
+              NesButton(type: NesButtonType.primary, onPressed: _submitWord, child: const Text('SUBMIT')),
+              const SizedBox(height: 16),
               Expanded(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 32),
                   itemCount: _chain.length,
                   itemBuilder: (context, index) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 6),
-                      child: Text('${_chain.length - index}. ${_chain[_chain.length - 1 - index]}', style: bodyStyle(color: index == 0 ? Colors.white : textMid, fontSize: 14, fontWeight: index == 0 ? FontWeight.w700 : FontWeight.w400)),
+                      padding: const EdgeInsets.only(bottom: 4),
+                      child: Text('${_chain.length - index}. ${_chain[_chain.length - 1 - index]}', style: bodyStyle(fontSize: 10, color: index == 0 ? Colors.white : textMid, fontWeight: index == 0 ? FontWeight.bold : FontWeight.normal)),
                     );
                   },
                 ),
               ),
-              SizedBox(height: 80 + MediaQuery.of(context).padding.bottom),
+              const SizedBox(height: 60),
             ],
           ),
         ),
@@ -2078,7 +1572,7 @@ class _WordChainGameState extends State<WordChainGame> {
   }
 }
 
-// ================= RAPID TAP GAME =================
+// ================= RAPID TAP GAME (NES style) =================
 class RapidTapGame extends StatefulWidget {
   const RapidTapGame({super.key});
 
@@ -2093,19 +1587,9 @@ class _RapidTapGameState extends State<RapidTapGame> {
   Timer? _timer;
 
   void _startGame() {
-    setState(() {
-      _taps = 0;
-      _timeLeft = 10;
-      _started = true;
-    });
+    setState(() { _taps = 0; _timeLeft = 10; _started = true; });
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        _timeLeft--;
-        if (_timeLeft <= 0) {
-          _timer?.cancel();
-          _started = false;
-        }
-      });
+      setState(() { _timeLeft--; if (_timeLeft <= 0) { _timer?.cancel(); _started = false; } });
     });
   }
 
@@ -2115,10 +1599,7 @@ class _RapidTapGameState extends State<RapidTapGame> {
   }
 
   @override
-  void dispose() {
-    _timer?.cancel();
-    super.dispose();
-  }
+  void dispose() { _timer?.cancel(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
@@ -2134,47 +1615,24 @@ class _RapidTapGameState extends State<RapidTapGame> {
                   padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
                   child: Row(
                     children: [
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        minimumSize: const Size(44, 44),
-                        onPressed: () => Navigator.of(context).pop(),
-                        child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                      ),
-                      Text('Rapid Tap', style: headingStyle(fontSize: 20, fontWeight: FontWeight.w700)),
+                      NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                      const SizedBox(width: 8),
+                      Text('RAPID TAP', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                       const Spacer(),
-                      if (_started)
-                        Text('$_timeLeft s', style: bodyStyle(color: Colors.redAccent, fontSize: 14, fontWeight: FontWeight.w700)),
+                      if (_started) Text('$_timeLeft s', style: bodyStyle(fontSize: 10, color: accent, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
                 const Spacer(),
                 if (!_started && _taps == 0)
-                  CupertinoButton(
-                    padding: EdgeInsets.zero,
-                    onPressed: _startGame,
-                    child: Container(
-                      width: 200,
-                      height: 60,
-                      decoration: BoxDecoration(gradient: LinearGradient(colors: [primary, accent]), borderRadius: BorderRadius.circular(20)),
-                      child: Center(child: Text('Start', style: bodyStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.w700))),
-                    ),
-                  )
+                  NesButton(type: NesButtonType.primary, onPressed: _startGame, child: const Text('START'))
                 else ...[
-                  Text('$_taps', style: headingStyle(fontSize: 72, fontWeight: FontWeight.w300)),
+                  Text('$_taps', style: headingStyle(fontSize: 48, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 8),
-                  Text(_started ? 'TAP ANYWHERE!' : 'Taps per second: ${(_taps / 10).toStringAsFixed(1)}', style: bodyStyle(color: textMid, fontSize: 16)),
+                  Text(_started ? 'TAP ANYWHERE!' : 'Taps/sec: ${(_taps / 10).toStringAsFixed(1)}', style: bodyStyle(fontSize: 10, color: textMid)),
                   if (!_started) ...[
-                    const SizedBox(height: 30),
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () => setState(() { _taps = 0; _startGame(); }),
-                      child: Container(
-                        width: 180,
-                        height: 50,
-                        decoration: BoxDecoration(gradient: LinearGradient(colors: [primary, accent]), borderRadius: BorderRadius.circular(16)),
-                        child: Center(child: Text('Play Again', style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700))),
-                      ),
-                    ),
+                    const SizedBox(height: 24),
+                    NesButton(type: NesButtonType.primary, onPressed: () { setState(() { _taps = 0; }); _startGame(); }, child: const Text('PLAY AGAIN')),
                   ],
                 ],
                 const Spacer(),

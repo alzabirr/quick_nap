@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
+import 'package:nes_ui/nes_ui.dart';
 import '../models/sleep_goal.dart';
 import '../providers/sleep_provider.dart';
 import '../storage/hive_storage.dart';
@@ -21,18 +22,17 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   int _currentPage = 0;
   final int _totalPages = 3;
 
-  // Question answers
   final TextEditingController _nameController = TextEditingController();
   int _targetSleepHours = 8;
   TimeOfDay _targetBedtime = const TimeOfDay(hour: 23, minute: 0);
   final List<String> _selectedReasons = [];
 
   final List<String> _reasons = [
-    'Wake up refreshed ☀️',
-    'Fall asleep faster 😴',
-    'Track sleep quality scientifically 📊',
-    'Reduce night disturbances (snore, cough) 🎙️',
-    'Maintain a consistent schedule ⏰',
+    'Wake up refreshed',
+    'Fall asleep faster',
+    'Track sleep quality',
+    'Reduce disturbances',
+    'Consistent schedule',
   ];
 
   @override
@@ -54,7 +54,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> _finishOnboarding() async {
-    // Capture state before any async gaps
     final storage = HiveStorage();
     final name = _nameController.text.trim().isEmpty ? 'Sleep Companion' : _nameController.text.trim();
     final sleepProvider = Provider.of<SleepProvider>(context, listen: false);
@@ -89,11 +88,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     return Expanded(
                       child: AnimatedContainer(
                         duration: const Duration(milliseconds: 300),
-                        height: 6,
+                        height: 8,
                         margin: const EdgeInsets.symmetric(horizontal: 4.0),
                         decoration: BoxDecoration(
-                          color: isSelected ? primary : textMid.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(10),
+                          color: isSelected ? primary : textMid.withValues(alpha: 0.3),
+                          border: Border.all(color: isSelected ? Colors.white : Colors.transparent, width: 1),
                         ),
                       ),
                     );
@@ -125,47 +124,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     if (_currentPage > 0)
-                      CupertinoButton(
-                        child: Text(
-                          'Back',
-                          style: bodyStyle(color: textMid, fontSize: 16, fontWeight: FontWeight.w600),
-                        ),
+                      NesButton(
+                        type: NesButtonType.normal,
                         onPressed: () {
                           _pageController.previousPage(
                             duration: const Duration(milliseconds: 400),
                             curve: Curves.easeInOutCubic,
                           );
                         },
+                        child: Text('BACK', style: bodyStyle(fontSize: 10, color: Colors.black)),
                       )
                     else
-                      const SizedBox(width: 44),
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
+                      const SizedBox(width: 80),
+                    NesButton(
+                      type: NesButtonType.primary,
                       onPressed: _nextPage,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [primary, accent]),
-                          borderRadius: BorderRadius.circular(24),
-                          boxShadow: [
-                            BoxShadow(
-                              color: primary.withValues(alpha: 0.35),
-                              blurRadius: 18,
-                              offset: const Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              _currentPage == _totalPages - 1 ? 'Start sleeping' : 'Continue',
-                              style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(CupertinoIcons.arrow_right, color: Colors.white, size: 18),
-                          ],
-                        ),
+                      child: Text(
+                        _currentPage == _totalPages - 1 ? 'START SLEEPING' : 'CONTINUE',
+                        style: bodyStyle(fontSize: 10),
                       ),
                     ),
                   ],
@@ -185,50 +161,30 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: LinearGradient(
-                colors: [primary, accent],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: primary.withValues(alpha: 0.3),
-                  blurRadius: 24,
-                  spreadRadius: 4,
-                ),
-              ],
-            ),
-            child: const Icon(
-              CupertinoIcons.moon_stars_fill,
-              size: 40,
-              color: Colors.white,
-            ),
+          NesContainer(
+            padding: const EdgeInsets.all(20),
+            child: const Icon(CupertinoIcons.moon_stars_fill, size: 40, color: Color(0xff209cee)),
           ).animate().slideY(begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutBack).fadeIn(),
-          const SizedBox(height: 32),
+          const SizedBox(height: 24),
           Text(
-            "Welcome to\nSmart Sleep",
-            style: headingStyle(fontSize: 36, fontWeight: FontWeight.w800),
+            "WELCOME TO\nSMART SLEEP",
+            style: headingStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
-          const SizedBox(height: 16),
+          const SizedBox(height: 12),
           Text(
             "Track your sleep cycles, record dreams, and wake up at the perfect moment with smart alarms.",
-            style: bodyStyle(color: textMid, fontSize: 16, height: 1.5),
+            style: bodyStyle(fontSize: 10, color: textMid, height: 1.5),
           ).animate().fadeIn(delay: 400.ms),
-          const SizedBox(height: 40),
+          const SizedBox(height: 32),
           glassCard(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: CupertinoTextField(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+            child: TextField(
               controller: _nameController,
-              placeholder: "What's your name?",
-              placeholderStyle: bodyStyle(color: textMid.withValues(alpha: 0.6), fontSize: 16),
-              style: bodyStyle(fontSize: 16),
-              decoration: null,
-              cursorColor: primary,
+              decoration: const InputDecoration(
+                labelText: "What's your name?",
+                border: InputBorder.none,
+              ),
+              style: const TextStyle(fontSize: 12),
               textCapitalization: TextCapitalization.words,
             ),
           ).animate().fadeIn(delay: 600.ms).slideY(begin: 0.1, end: 0),
@@ -244,16 +200,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "What matters most?",
-            style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800),
-          ),
+          Text("WHAT MATTERS MOST?", style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text(
-            "We'll tailor your sleep coaching tips to help you reach your goals.",
-            style: bodyStyle(color: textMid, fontSize: 15),
-          ),
-          const SizedBox(height: 28),
+          Text("We'll tailor your sleep coaching tips.", style: bodyStyle(fontSize: 10, color: textMid)),
+          const SizedBox(height: 24),
           Expanded(
             child: ListView.builder(
               physics: const NeverScrollableScrollPhysics(),
@@ -262,7 +212,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 final reason = _reasons[index];
                 final isSelected = _selectedReasons.contains(reason);
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 12.0),
+                  padding: const EdgeInsets.only(bottom: 10.0),
                   child: GestureDetector(
                     onTap: () {
                       setState(() {
@@ -275,42 +225,28 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     },
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       decoration: BoxDecoration(
-                        color: isSelected ? primary.withValues(alpha: 0.12) : surface.withValues(alpha: 0.4),
-                        borderRadius: BorderRadius.circular(18),
+                        color: isSelected ? primary.withValues(alpha: 0.2) : surface.withValues(alpha: 0.5),
                         border: Border.all(
-                          color: isSelected ? primary.withValues(alpha: 0.4) : Colors.white.withValues(alpha: 0.06),
-                          width: isSelected ? 1.5 : 1,
+                          color: isSelected ? primary : textMid.withValues(alpha: 0.3),
+                          width: isSelected ? 2 : 1,
                         ),
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: Text(
-                              reason,
-                              style: bodyStyle(
-                                fontSize: 16,
-                                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
-                              ),
-                            ),
+                            child: Text(reason, style: bodyStyle(fontSize: 10, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
                           ),
-                          AnimatedContainer(
-                            duration: const Duration(milliseconds: 200),
-                            width: 24,
-                            height: 24,
+                          Container(
+                            width: 20,
+                            height: 20,
                             decoration: BoxDecoration(
-                              shape: BoxShape.circle,
                               color: isSelected ? primary : Colors.transparent,
-                              border: Border.all(
-                                color: isSelected ? primary : textMid.withValues(alpha: 0.4),
-                                width: 2.0,
-                              ),
+                              border: Border.all(color: isSelected ? primary : textMid, width: 2),
                             ),
-                            child: isSelected
-                                ? const Icon(Icons.check, size: 14, color: Colors.white)
-                                : null,
+                            child: isSelected ? const Icon(Icons.check, size: 12, color: Colors.white) : null,
                           ),
                         ],
                       ),
@@ -332,40 +268,25 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            "Set your sleep goal",
-            style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800),
-          ),
+          Text("SET YOUR SLEEP GOAL", style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text(
-            "How many hours of sleep do you want, and when do you go to bed?",
-            style: bodyStyle(color: textMid, fontSize: 15),
-          ),
-          const SizedBox(height: 32),
+          Text("How many hours and when do you go to bed?", style: bodyStyle(fontSize: 10, color: textMid)),
+          const SizedBox(height: 24),
           glassCard(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "DAILY SLEEP TARGET",
-                  style: bodyStyle(fontSize: 12, color: textMid, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 14),
+                Text("DAILY SLEEP TARGET", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 12),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          "$_targetSleepHours",
-                          style: headingStyle(fontSize: 40, fontWeight: FontWeight.w800),
-                        ),
-                        Text(
-                          _targetSleepHours == 1 ? "hour" : "hours",
-                          style: bodyStyle(color: textMid, fontSize: 14, fontWeight: FontWeight.w500),
-                        ),
+                        Text("$_targetSleepHours", style: headingStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                        Text(_targetSleepHours == 1 ? "hour" : "hours", style: bodyStyle(fontSize: 10, color: textMid)),
                       ],
                     ),
                     Row(
@@ -377,17 +298,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             }
                           },
                           child: Container(
-                            width: 44,
-                            height: 44,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
-                              color: surface.withValues(alpha: 0.6),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                              color: surface,
+                              border: Border.all(color: _targetSleepHours > 4 ? primary : textMid, width: 1),
                             ),
-                            child: Icon(CupertinoIcons.minus, color: _targetSleepHours > 4 ? primary : textMid, size: 20),
+                            child: Icon(CupertinoIcons.minus, color: _targetSleepHours > 4 ? primary : textMid, size: 16),
                           ),
                         ),
-                        const SizedBox(width: 16),
+                        const SizedBox(width: 12),
                         GestureDetector(
                           onTap: () {
                             if (_targetSleepHours < 12) {
@@ -395,14 +315,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             }
                           },
                           child: Container(
-                            width: 44,
-                            height: 44,
+                            width: 36,
+                            height: 36,
                             decoration: BoxDecoration(
-                              color: surface.withValues(alpha: 0.6),
-                              borderRadius: BorderRadius.circular(14),
-                              border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                              color: surface,
+                              border: Border.all(color: _targetSleepHours < 12 ? primary : textMid, width: 1),
                             ),
-                            child: Icon(CupertinoIcons.plus, color: _targetSleepHours < 12 ? primary : textMid, size: 20),
+                            child: Icon(CupertinoIcons.plus, color: _targetSleepHours < 12 ? primary : textMid, size: 16),
                           ),
                         ),
                       ],
@@ -410,30 +329,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   ],
                 ),
                 const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16.0),
-                  child: Divider(color: Colors.white10),
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: Divider(color: Color(0xff808080)),
                 ),
-                Text(
-                  "BEDTIME",
-                  style: bodyStyle(fontSize: 12, color: textMid, fontWeight: FontWeight.w800),
-                ),
-                const SizedBox(height: 12),
+                Text("BEDTIME", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 10),
                 GestureDetector(
                   onTap: () async {
                     final time = await showTimePicker(
                       context: context,
                       initialTime: _targetBedtime,
-                      builder: (context, child) {
-                        return Theme(
-                          data: ThemeData.dark().copyWith(
-                            colorScheme: ColorScheme.dark(
-                              primary: primary,
-                              surface: surface,
-                            ),
-                          ),
-                          child: child!,
-                        );
-                      },
                     );
                     if (time != null) {
                       setState(() {
@@ -442,20 +347,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                     }
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: surface.withValues(alpha: 0.6),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+                      color: surface,
+                      border: Border.all(color: textMid, width: 1),
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          _targetBedtime.format(context),
-                          style: headingStyle(fontSize: 24, fontWeight: FontWeight.w700),
-                        ),
-                        Icon(CupertinoIcons.clock, color: primary, size: 22),
+                        Text(_targetBedtime.format(context), style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        Icon(CupertinoIcons.clock, color: primary, size: 18),
                       ],
                     ),
                   ),

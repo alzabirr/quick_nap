@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../themes/app_theme.dart';
 
 class AmbientBackground extends StatelessWidget {
   final Widget child;
@@ -8,8 +7,9 @@ class AmbientBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      color: bgLight,
+      color: isDark ? const Color(0xff0d0d0d) : const Color(0xffe5e5e5),
       child: child,
     );
   }

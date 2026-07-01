@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -24,8 +23,6 @@ void main() async {
       systemNavigationBarColor: Colors.transparent,
       systemNavigationBarDividerColor: Colors.transparent,
       systemNavigationBarIconBrightness: Brightness.light,
-      systemNavigationBarContrastEnforced: false,
-      systemStatusBarContrastEnforced: false,
     ),
   );
   await SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
@@ -35,12 +32,13 @@ void main() async {
   await AlarmNotificationService.initialize();
 
   final storage = HiveStorage();
-  
+
   // Load initial Dark Mode preference
-  final isDark = storage.getSetting('darkMode', true) as bool; // Default to dark mode for sleep
+  final isDark = storage.getSetting('darkMode', true) as bool;
   darkModeNotifier.value = isDark;
 
-  final onboardingComplete = storage.getSetting('onboarding_complete', false) as bool;
+  final onboardingComplete =
+      storage.getSetting('onboarding_complete', false) as bool;
 
   runApp(
     MultiProvider(
@@ -57,7 +55,7 @@ void main() async {
 
 class SnapApp extends StatelessWidget {
   final bool onboardingComplete;
-  
+
   const SnapApp({super.key, required this.onboardingComplete});
 
   @override
@@ -68,32 +66,8 @@ class SnapApp extends StatelessWidget {
         return MaterialApp(
           title: 'Sleep Cycle & Alarm',
           debugShowCheckedModeBanner: false,
-          theme: ThemeData(
+          theme: buildNesTheme(
             brightness: isDark ? Brightness.dark : Brightness.light,
-            primaryColor: const Color(0xFFD7494C),
-            scaffoldBackgroundColor: isDark ? const Color(0xFF000000) : const Color(0xFFF2F2F7),
-            appBarTheme: AppBarTheme(
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              foregroundColor: isDark ? const Color(0xFFF5F5F7) : const Color(0xFF1C1C1E),
-              systemOverlayStyle: SystemUiOverlayStyle(
-                statusBarColor: Colors.transparent,
-                statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-                statusBarBrightness: isDark ? Brightness.dark : Brightness.light,
-                systemNavigationBarColor: Colors.transparent,
-                systemNavigationBarDividerColor: Colors.transparent,
-                systemNavigationBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-                systemNavigationBarContrastEnforced: false,
-                systemStatusBarContrastEnforced: false,
-              ),
-            ),
-            cupertinoOverrideTheme: CupertinoThemeData(
-              brightness: isDark ? Brightness.dark : Brightness.light,
-              primaryColor: const Color(0xFFD7494C),
-              barBackgroundColor: isDark ? const Color(0xCC121212) : const Color(0xCCFFFFFF),
-              scaffoldBackgroundColor: isDark ? const Color(0xFF000000) : const Color(0xFFF2F2F7),
-              textTheme: const CupertinoTextThemeData(primaryColor: Color(0xFFD7494C)),
-            ),
           ),
           home: onboardingComplete ? const HomeScreen() : const OnboardingScreen(),
           routes: {

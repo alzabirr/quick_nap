@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:glassmorphism_ui/glassmorphism_ui.dart';
-import '../themes/app_theme.dart';
+import 'package:nes_ui/nes_ui.dart';
 
+/// A card widget styled with the NES container look.
+/// Replaces the old glassmorphism card with a pixel-art NesContainer.
 Widget glassCard({
   required Widget child,
-  double opacity = 0.15,
   EdgeInsets? padding,
   BorderRadius? borderRadius,
 }) {
-  final radius = borderRadius ?? BorderRadius.circular(cardRadius);
-  return GlassContainer(
-    blur: 24,
-    opacity: opacity,
-    color: Colors.white.withValues(alpha: opacity * 0.8),
-    borderRadius: radius,
-    border: Border.all(
-      color: Colors.white.withValues(alpha: 0.25),
-      width: 1.2,
-    ),
-    shadowColor: Colors.black.withValues(alpha: 0.08),
-    child: padding != null
-        ? Padding(
-            padding: padding,
-            child: child,
-          )
-        : child,
+  return _NesCard(
+    padding: padding,
+    child: child,
   );
+}
+
+class _NesCard extends StatelessWidget {
+  final Widget child;
+  final EdgeInsets? padding;
+
+  const _NesCard({required this.child, this.padding});
+
+  @override
+  Widget build(BuildContext context) {
+    return NesContainer(
+      padding: padding ?? const EdgeInsets.all(16),
+      child: child,
+    );
+  }
 }

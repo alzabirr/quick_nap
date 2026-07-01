@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:nes_ui/nes_ui.dart';
 import '../themes/app_theme.dart';
 import '../widgets/ambient_background.dart';
 import '../widgets/glass_card.dart';
@@ -43,9 +44,7 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
   void _startCountdown() {
     _countdownTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_countdown > 1) {
-        setState(() {
-          _countdown--;
-        });
+        setState(() { _countdown--; });
       } else {
         _countdownTimer?.cancel();
         _startNextRound();
@@ -55,16 +54,11 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
 
   void _startNextRound() {
     if (_round >= _totalRounds) {
-      setState(() {
-        _gameState = 4;
-      });
+      setState(() { _gameState = 4; });
       return;
     }
     
-    setState(() {
-      _gameState = 2;
-      _round++;
-    });
+    setState(() { _gameState = 2; _round++; });
 
     final randomDelayMs = 1500 + Random().nextInt(2000);
     _spawnTimer = Timer(Duration(milliseconds: randomDelayMs), () {
@@ -94,9 +88,9 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
 
   String get _alertnessLevel {
     final avg = _averageTime;
-    if (avg < 280) return "Fully Alert ⚡";
-    if (avg < 400) return "Slightly Groggy 🥱";
-    return "Need Coffee! ☕";
+    if (avg < 280) return "Fully Alert!";
+    if (avg < 400) return "Slightly Groggy";
+    return "Need Coffee!";
   }
 
   String get _alertnessDescription {
@@ -128,17 +122,9 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
                 right: 20,
                 child: Row(
                   children: [
-                    CupertinoButton(
-                      padding: EdgeInsets.zero,
-                      minimumSize: const Size(44, 44),
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: Icon(CupertinoIcons.chevron_left, color: textDark, size: 28),
-                    ),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Morning Reflexes',
-                      style: headingStyle(fontSize: 18, color: textDark, fontWeight: FontWeight.w600),
-                    ),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    const SizedBox(width: 8),
+                    Text('MORNING REFLEXES', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   ],
                 ),
               ),
@@ -151,72 +137,28 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (_gameState == 0) ...[
-                      const Icon(CupertinoIcons.bolt_horizontal_circle_fill, size: 80, color: Color(0xFFFBBF24))
+                      NesContainer(padding: const EdgeInsets.all(20), child: const Icon(CupertinoIcons.bolt_horizontal_circle_fill, size: 56, color: Color(0xfff7d51d)))
                           .animate()
                           ..shake()
                           ..scaleXY(begin: 0.8, end: 1.0),
                       const SizedBox(height: 24),
-                      Text(
-                        "Morning Alertness Test",
-                        textAlign: TextAlign.center,
-                        style: headingStyle(fontSize: 24, fontWeight: FontWeight.w800),
-                      ),
+                      Text("Morning Alertness Test", textAlign: TextAlign.center, style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 12),
-                      Text(
-                        "Test your morning cognitive speeds. Pop the target shapes as fast as they appear. We'll average 5 trials.",
-                        textAlign: TextAlign.center,
-                        style: bodyStyle(color: textMid, fontSize: 15, height: 1.5),
-                      ),
-                      const SizedBox(height: 48),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: _startGame,
-                        child: Container(
-                          height: 56,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(colors: [primary, accent]),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Start Reflex Test",
-                              style: bodyStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                        ),
-                      ),
+                      Text("Test your morning cognitive speeds. Pop the target shapes as fast as they appear.", textAlign: TextAlign.center, style: bodyStyle(fontSize: 10, color: textMid, height: 1.5)),
+                      const SizedBox(height: 32),
+                      NesButton(type: NesButtonType.primary, onPressed: _startGame, child: const Text("START REFLEX TEST")),
                     ] else if (_gameState == 1) ...[
-                      Center(
-                        child: Text(
-                          "$_countdown",
-                          style: headingStyle(fontSize: 100, fontWeight: FontWeight.w800, color: primary),
-                        ).animate().scaleXY(begin: 0.5, end: 1.5, duration: 800.ms, curve: Curves.bounceOut),
-                      ),
+                      Center(child: Text("$_countdown", style: headingStyle(fontSize: 72, fontWeight: FontWeight.bold, color: primary))
+                          .animate().scaleXY(begin: 0.5, end: 1.5, duration: 800.ms, curve: Curves.bounceOut)),
                     ] else if (_gameState == 2 || _gameState == 3) ...[
-                      // Game play dashboard
-                      Text(
-                        "Round $_round of $_totalRounds",
-                        textAlign: TextAlign.center,
-                        style: bodyStyle(fontSize: 14, color: textMid, fontWeight: FontWeight.w700),
-                      ),
+                      Text("Round $_round of $_totalRounds", textAlign: TextAlign.center, style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
-                      Text(
-                        _gameState == 2 ? "Wait for it..." : "TAP!",
-                        textAlign: TextAlign.center,
-                        style: headingStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w800,
-                          color: _gameState == 3 ? Colors.green : textDark,
-                        ),
-                      ),
+                      Text(_gameState == 2 ? "Wait for it..." : "TAP!", textAlign: TextAlign.center,
+                          style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold, color: _gameState == 3 ? const Color(0xff92cc41) : Colors.white)),
                       const SizedBox(height: 24),
                       Container(
                         height: 320,
-                        decoration: BoxDecoration(
-                          color: surface.withValues(alpha: 0.4),
-                          borderRadius: BorderRadius.circular(24),
-                          border: Border.all(color: textDark.withValues(alpha: 0.08)),
-                        ),
+                        decoration: BoxDecoration(color: surface, border: Border.all(color: textMid, width: 2)),
                         child: Stack(
                           children: [
                             if (_gameState == 3)
@@ -229,19 +171,10 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
                                     width: _targetSize,
                                     height: _targetSize,
                                     decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: LinearGradient(colors: [accent, Colors.orange]),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: accent.withValues(alpha: 0.4),
-                                          blurRadius: 16,
-                                          spreadRadius: 4,
-                                        ),
-                                      ],
+                                      color: accent,
+                                      border: Border.all(color: Colors.white, width: 3),
                                     ),
-                                    child: const Center(
-                                      child: Icon(CupertinoIcons.bolt_fill, color: Colors.white, size: 36),
-                                    ),
+                                    child: const Center(child: Icon(CupertinoIcons.bolt_fill, color: Colors.white, size: 36)),
                                   ).animate().scale(duration: 150.ms),
                                 ),
                               ),
@@ -249,59 +182,28 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
                         ),
                       ),
                     ] else if (_gameState == 4) ...[
-                      // Results Screen
                       glassCard(
-                        padding: const EdgeInsets.all(24),
+                        padding: const EdgeInsets.all(20),
                         child: Column(
                           children: [
-                            Text(
-                              "TEST RESULT",
-                              style: bodyStyle(fontSize: 12, color: textMid, fontWeight: FontWeight.w800),
-                            ),
+                            Text("TEST RESULT", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 8),
-                            Text(
-                              _alertnessLevel,
-                              style: headingStyle(fontSize: 28, fontWeight: FontWeight.w800, color: primary),
-                            ),
-                            const Divider(color: Colors.white10, height: 32),
+                            Text(_alertnessLevel, style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold, color: primary)),
+                            const Divider(color: Color(0xff808080), height: 24),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text("Average Speed", style: bodyStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-                                Text(
-                                  "${_averageTime.toStringAsFixed(0)} ms",
-                                  style: headingStyle(fontSize: 18, fontWeight: FontWeight.w700),
-                                ),
+                                Text("Average Speed", style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold)),
+                                Text("${_averageTime.toStringAsFixed(0)} ms", style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                               ],
                             ),
-                            const SizedBox(height: 16),
-                            Text(
-                              _alertnessDescription,
-                              textAlign: TextAlign.center,
-                              style: bodyStyle(color: textMid, height: 1.4),
-                            ),
+                            const SizedBox(height: 12),
+                            Text(_alertnessDescription, textAlign: TextAlign.center, style: bodyStyle(fontSize: 10, color: textMid, height: 1.4)),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 32),
-                      CupertinoButton(
-                        padding: EdgeInsets.zero,
-                        onPressed: _startGame,
-                        child: Container(
-                          height: 56,
-                          decoration: BoxDecoration(
-                            color: surface.withValues(alpha: 0.8),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(color: textDark.withValues(alpha: 0.08)),
-                          ),
-                          child: Center(
-                            child: Text(
-                              "Try Again",
-                              style: bodyStyle(color: textDark, fontSize: 16, fontWeight: FontWeight.w700),
-                            ),
-                          ),
-                        ),
-                      ),
+                      const SizedBox(height: 24),
+                      NesButton(type: NesButtonType.normal, onPressed: _startGame, child: Text("TRY AGAIN", style: bodyStyle(fontSize: 10, color: Colors.black))),
                     ],
                   ],
                 ),
