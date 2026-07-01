@@ -90,11 +90,11 @@ ThemeData buildNesTheme({required Brightness brightness}) {
       ),
       padding: const EdgeInsets.all(16),
     ),
-    nesSnackbarTheme: const NesSnackbarTheme(
-      normal: Color(0xffffffff),
-      success: Color(0xff92cc41),
-      warning: Color(0xfff7d51d),
-      error: Color(0xffe76e55),
+    nesSnackbarTheme: NesSnackbarTheme(
+      normal: isDark ? const Color(0xff212529) : const Color(0xffffffff),
+      success: successColor,
+      warning: warningColor,
+      error: accent,
     ),
   );
 }

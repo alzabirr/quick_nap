@@ -8,6 +8,7 @@ import '../providers/notes_provider.dart';
 import '../themes/app_theme.dart';
 import '../widgets/ambient_background.dart';
 import '../widgets/glass_card.dart';
+import 'dream_note_editor_screen.dart';
 
 class DreamNotesScreen extends StatelessWidget {
   final double? bottomPadding;
@@ -19,7 +20,12 @@ class DreamNotesScreen extends StatelessWidget {
     final notesProvider = Provider.of<NotesProvider>(context);
     final double listBottomPadding = bottomPadding ?? (28.0 + MediaQuery.of(context).padding.bottom);
     
-    final notes = List.from(notesProvider.notes.reversed.toList());
+    final notes = List<DreamNote>.from(notesProvider.notes);
+    notes.sort((a, b) {
+      if (a.isPinned && !b.isPinned) return -1;
+      if (!a.isPinned && b.isPinned) return 1;
+      return b.date.compareTo(a.date); // Newest first
+    });
 
     final Map<String, String> categoryLabels = {
       'dream': 'DREAM',
@@ -54,7 +60,13 @@ class DreamNotesScreen extends StatelessWidget {
                     ),
                     NesButton(
                       type: NesButtonType.primary,
-                      onPressed: () => _showAddNoteBottomSheet(context),
+                      onPressed: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const DreamNoteEditorScreen(),
+                          ),
+                        );
+                      },
                       child: Row(
                         children: [
                           const Icon(CupertinoIcons.plus, color: Colors.white, size: 14),
@@ -98,60 +110,44 @@ class DreamNotesScreen extends StatelessWidget {
                           final catLabel = categoryLabels[note.category] ?? note.category.toUpperCase();
                           final catColor = categoryColors[note.category] ?? primary;
 
-                          return Padding(
+                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
-                            child: glassCard(
-                              padding: const EdgeInsets.all(14),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(dateStr, style: bodyStyle(fontSize: 8, fontWeight: FontWeight.bold, color: textMid)),
-                                      Row(
-                                        children: [
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                            decoration: BoxDecoration(
-                                              color: catColor.withValues(alpha: 0.2),
-                                              border: Border.all(color: catColor, width: 1),
-                                            ),
-                                            child: Text(catLabel, style: TextStyle(color: catColor, fontSize: 8, decoration: TextDecoration.none, fontWeight: FontWeight.bold)),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          NesButton(
-                                            type: NesButtonType.normal,
-                                            onPressed: () => _confirmDelete(context, notesProvider, note),
-                                            child: const Icon(CupertinoIcons.trash, color: Color(0xffe76e55), size: 12),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (context) => DreamNoteEditorScreen(note: note),
                                   ),
-                                  const SizedBox(height: 8),
-                                  Text(note.title, style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                                  const SizedBox(height: 6),
-                                  Text(note.content, style: bodyStyle(fontSize: 8, color: textDark.withValues(alpha: 0.85), height: 1.4), maxLines: 3, overflow: TextOverflow.ellipsis),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text('Lucidity: ', style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
-                                          Row(
-                                            children: List.generate(5, (starIdx) {
-                                              final active = starIdx < note.lucidityScore;
-                                              return Icon(active ? CupertinoIcons.sparkles : CupertinoIcons.circle, color: active ? const Color(0xfff7d51d) : Colors.white24, size: 10);
-                                            }),
-                                          ),
-                                        ],
-                                      ),
-                                      Text('Dream Mood: ${note.moodEmoji}', style: bodyStyle(fontSize: 8, fontWeight: FontWeight.bold)),
-                                    ],
-                                  ),
-                                ],
+                                );
+                              },
+                              child: glassCard(
+                                padding: const EdgeInsets.all(14),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(note.content, style: bodyStyle(fontSize: 8, color: textDark.withValues(alpha: 0.85), height: 1.4), maxLines: 3, overflow: TextOverflow.ellipsis),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            if (note.isPinned) ...[
+                                              Icon(CupertinoIcons.pin_fill, color: primary, size: 10),
+                                              const SizedBox(width: 4),
+                                            ],
+                                            Text(dateStr, style: bodyStyle(fontSize: 8, fontWeight: FontWeight.bold, color: textMid)),
+                                          ],
+                                        ),
+                                         NesButton(
+                                           type: NesButtonType.normal,
+                                           onPressed: () => _confirmDelete(context, notesProvider, note),
+                                           child: const Icon(CupertinoIcons.trash, color: Color(0xffe76e55), size: 12),
+                                         ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           );
@@ -193,179 +189,4 @@ class DreamNotesScreen extends StatelessWidget {
     );
   }
 
-  void _showAddNoteBottomSheet(BuildContext context) {
-    final notesProvider = Provider.of<NotesProvider>(context, listen: false);
-    final titleController = TextEditingController();
-    final contentController = TextEditingController();
-    
-    String selectedCategory = 'dream';
-    String selectedMood = '🙂';
-    int selectedLucidity = 3;
-
-    final categories = ['dream', 'lucid', 'nightmare', 'reflection'];
-    final categoryLabels = {'dream': 'DREAM', 'lucid': 'LUCID', 'nightmare': 'NIGHTMARE', 'reflection': 'REFLECTION'};
-    final moods = ['😫', '🥱', '😐', '🙂', '🤩'];
-
-    showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: Colors.transparent,
-      barrierColor: const Color(0x80000000),
-      isScrollControlled: true,
-      builder: (sheetContext) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return NesContainer(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 16 + MediaQuery.of(context).padding.bottom),
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Center(
-                      child: Container(width: 40, height: 4, decoration: BoxDecoration(color: textMid, border: Border.all(color: Colors.white, width: 1))),
-                    ),
-                    const SizedBox(height: 16),
-                    Text("LOG A NEW DREAM", style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
-                    const SizedBox(height: 16),
-
-                    // Title
-                    glassCard(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      child: TextField(
-                        controller: titleController,
-                        decoration: const InputDecoration(labelText: 'Title', border: InputBorder.none),
-                        style: const TextStyle(fontSize: 12),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-
-                    // Content
-                    glassCard(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                      child: TextField(
-                        controller: contentController,
-                        decoration: const InputDecoration(labelText: 'Describe your dream...', border: InputBorder.none, alignLabelWithHint: true),
-                        style: const TextStyle(fontSize: 10),
-                        maxLines: 4,
-                        minLines: 2,
-                      ),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Category
-                    Text("DREAM CATEGORY", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 6),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: categories.map((cat) {
-                        final isSelected = selectedCategory == cat;
-                        return GestureDetector(
-                          onTap: () => setState(() => selectedCategory = cat),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: isSelected ? primary : surface,
-                              border: Border.all(color: isSelected ? Colors.white : textMid, width: 1),
-                            ),
-                            child: Text(categoryLabels[cat] ?? cat, style: bodyStyle(color: isSelected ? Colors.white : textDark, fontSize: 8, fontWeight: FontWeight.bold)),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Lucidity
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("LUCIDITY LEVEL", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
-                        Row(
-                          children: List.generate(5, (starIdx) {
-                            final active = starIdx < selectedLucidity;
-                            return GestureDetector(
-                              onTap: () => setState(() => selectedLucidity = starIdx + 1),
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 3),
-                                child: Icon(active ? CupertinoIcons.sparkles : CupertinoIcons.circle, color: active ? const Color(0xfff7d51d) : Colors.white24, size: 16),
-                              ),
-                            );
-                          }),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 14),
-
-                    // Mood
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("DREAM MOOD", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
-                        Row(
-                          children: moods.map((m) {
-                            final isSelected = selectedMood == m;
-                            return GestureDetector(
-                              onTap: () => setState(() => selectedMood = m),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.all(6),
-                                margin: const EdgeInsets.symmetric(horizontal: 3),
-                                decoration: BoxDecoration(
-                                  color: isSelected ? primary.withValues(alpha: 0.2) : Colors.transparent,
-                                  border: Border.all(color: isSelected ? primary : Colors.transparent, width: 1),
-                                ),
-                                child: Text(m, style: const TextStyle(fontSize: 16)),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-
-                    // Save
-                    NesButton(
-                      type: NesButtonType.primary,
-                      onPressed: () {
-                        final title = titleController.text.trim();
-                        final content = contentController.text.trim();
-                        
-                        if (title.isEmpty || content.isEmpty) {
-                          showDialog<void>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor: surface,
-                              title: Text('Missing Fields', style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                              content: Text('Please fill out both title and content.', style: bodyStyle(fontSize: 10, color: textMid)),
-                              actions: [
-                                NesButton(type: NesButtonType.primary, onPressed: () => Navigator.of(context).pop(), child: Text('OK', style: bodyStyle(fontSize: 10))),
-                              ],
-                            ),
-                          );
-                          return;
-                        }
-
-                        notesProvider.addNote(DreamNote(
-                          date: DateTime.now(),
-                          title: title,
-                          content: content,
-                          lucidityScore: selectedLucidity,
-                          moodEmoji: selectedMood,
-                          category: selectedCategory,
-                        ));
-
-                        Navigator.of(sheetContext).pop();
-                      },
-                      child: const Text("SAVE DREAM NOTE"),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-        );
-      },
-    );
-  }
 }

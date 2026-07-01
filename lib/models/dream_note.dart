@@ -8,6 +8,7 @@ class DreamNote {
   final int lucidityScore; // 1-5
   final String moodEmoji; // Emoji representing dream mood
   final String category; // 'dream', 'nightmare', 'lucid', 'reflection'
+  final bool isPinned;
 
   DreamNote({
     String? id,
@@ -17,6 +18,7 @@ class DreamNote {
     required this.lucidityScore,
     required this.moodEmoji,
     required this.category,
+    this.isPinned = false,
   }) : id = id ?? const Uuid().v4();
 
   Map<String, dynamic> toJson() => {
@@ -27,6 +29,7 @@ class DreamNote {
         'lucidityScore': lucidityScore,
         'moodEmoji': moodEmoji,
         'category': category,
+        'isPinned': isPinned,
       };
 
   factory DreamNote.fromJson(Map<String, dynamic> json) => DreamNote(
@@ -37,5 +40,6 @@ class DreamNote {
         lucidityScore: json['lucidityScore'] as int? ?? 1,
         moodEmoji: json['moodEmoji'] as String? ?? '😐',
         category: json['category'] as String? ?? 'dream',
+        isPinned: json['isPinned'] as bool? ?? false,
       );
 }

@@ -43,6 +43,22 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   void _nextPage() {
+    if (_currentPage == 0 && _nameController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Please enter your name to continue.",
+            style: bodyStyle(fontSize: 10, color: Colors.white),
+          ),
+          backgroundColor: Colors.redAccent,
+        ),
+      );
+      return;
+    }
+    
+    // Dismiss the keyboard when transitioning to the next page
+    FocusScope.of(context).unfocus();
+
     if (_currentPage < _totalPages - 1) {
       _pageController.nextPage(
         duration: const Duration(milliseconds: 400),
@@ -167,7 +183,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           ).animate().slideY(begin: 0.3, end: 0, duration: 600.ms, curve: Curves.easeOutBack).fadeIn(),
           const SizedBox(height: 24),
           Text(
-            "WELCOME TO\nSMART SLEEP",
+            "WELCOME TO\nQUICK NAP",
             style: headingStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
           const SizedBox(height: 12),

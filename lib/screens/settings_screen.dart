@@ -154,160 +154,171 @@ class _SettingsScreenState extends State<SettingsScreen> {
   void _showAboutDialog() {
     _showInfoDialog(
       title: 'About Nappy',
-      message: 'Nappy 1.0.0\nSmart sleep tracking and alarm app.',
+      message: 'Nappy 1.0.0\nQuick sleep tracking and alarm app.',
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final double listBottomPadding = widget.bottomPadding ?? (28.0 + MediaQuery.of(context).padding.bottom);
+    final canPop = Navigator.of(context).canPop();
     return Scaffold(
       backgroundColor: bgLight,
       body: AmbientBackground(
         child: SafeArea(
           bottom: widget.bottomPadding == null,
-          child: ListView(
-                padding: EdgeInsets.fromLTRB(20, 12, 20, listBottomPadding),
-                physics: const BouncingScrollPhysics(),
-                children: [
-                  Row(
-                    children: [
-                      if (Navigator.of(context).canPop()) ...[
-                        NesButton(
-                          type: NesButtonType.normal,
-                          onPressed: () => Navigator.of(context).pop(),
-                          child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20),
-                        ),
-                        const SizedBox(width: 12),
-                      ],
-                      Text(
-                        'SETTINGS',
-                        style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Pinned Header Row
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+                child: Row(
+                  children: [
+                    if (canPop) ...[
+                      NesButton(
+                        type: NesButtonType.normal,
+                        onPressed: () => Navigator.of(context).pop(),
+                        child: Icon(CupertinoIcons.chevron_left, color: isDarkMode ? Colors.white : Colors.black, size: 20),
                       ),
+                      const SizedBox(width: 12),
                     ],
-                  ),
-                  const SizedBox(height: 24),
-                  _ProfileHeader(
-                    name: _profileName,
-                    workspaceName: _workspaceName,
-                    onTap: _showEditProfileDialog,
-                  ),
-                  const SizedBox(height: 16),
+                    Text(
+                      'SETTINGS',
+                      style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView(
+                  padding: EdgeInsets.fromLTRB(20, 4, 20, listBottomPadding),
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    _ProfileHeader(
+                      name: _profileName,
+                      workspaceName: _workspaceName,
+                      onTap: _showEditProfileDialog,
+                    ),
+                    const SizedBox(height: 16),
 
-                  _SettingsGroup(
-                    title: 'ACCOUNT',
-                    children: [
-                      _ActionSetting(
-                        icon: CupertinoIcons.person_crop_circle,
-                        title: 'Edit profile',
-                        subtitle: 'Name and personal details',
-                        onTap: _showEditProfileDialog,
-                      ),
-                      const _Divider(),
-                      _SwitchSetting(
-                        title: 'Notifications',
-                        subtitle: 'Alarm and reminder alerts',
-                        value: _notificationsEnabled,
-                        onChanged: _updateNotifications,
-                      ),
-                      const _Divider(),
-                      _SwitchSetting(
-                        title: 'Cloud sync',
-                        subtitle: 'Back up your data',
-                        value: _cloudSyncEnabled,
-                        onChanged: _updateCloudSync,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  _SettingsGroup(
-                    title: 'APPEARANCE',
-                    children: [
-                      _SwitchSetting(
-                        title: 'Dark Mode',
-                        subtitle: 'Easier on the eyes at night',
-                        value: darkModeNotifier.value,
-                        onChanged: (val) async {
-                          await _storage.saveSetting('darkMode', val);
-                          darkModeNotifier.value = val;
-                          setState(() {});
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  _SettingsGroup(
-                    title: 'APP',
-                    children: [
-                      _SwitchSetting(
-                        title: 'Haptic feedback',
-                        subtitle: 'Vibrate on interactions',
-                        value: _hapticFeedbackEnabled,
-                        onChanged: _updateHapticFeedback,
-                      ),
-                      const _Divider(),
-                      _ActionSetting(
-                        icon: CupertinoIcons.lock_shield,
-                        title: 'Privacy',
-                        subtitle: 'Data stays on this device',
-                        onTap: _showPrivacyDialog,
-                      ),
-                      const _Divider(),
-                      _ActionSetting(
-                        icon: CupertinoIcons.info_circle,
-                        title: 'About',
-                        subtitle: 'Version 1.0.0',
-                        onTap: _showAboutDialog,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 14),
-                  _SettingsGroup(
-                    title: 'DATA',
-                    children: [
-                      _ActionSetting(
-                        icon: CupertinoIcons.refresh,
-                        title: 'Reset Application',
-                        subtitle: 'Clear all data and start fresh',
-                        onTap: () async {
-                          showDialog<void>(
-                            context: context,
-                            builder: (dialogContext) => AlertDialog(
-                              backgroundColor: surface,
-                              title: Text("Reset App?", style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-                              content: Text("This will clear all your sleep history, dream notes, and goals. This cannot be undone.", style: bodyStyle(fontSize: 10, color: textMid)),
-                              actions: [
-                                NesButton(
-                                  type: NesButtonType.normal,
-                                  onPressed: () => Navigator.of(dialogContext).pop(),
-                                  child: Text("Cancel", style: bodyStyle(fontSize: 10, color: Colors.black)),
-                                ),
-                                NesButton(
-                                  type: NesButtonType.error,
-                                  onPressed: () async {
-                                    final storage = HiveStorage();
-                                    await storage.saveSetting('onboarding_complete', false);
-                                    await storage.saveSetting('sessions_list', null);
-                                    await storage.saveSetting('dream_notes_list', null);
-                                    await storage.saveSetting('alarm_config', null);
-                                    await storage.saveSetting('sleep_goal', null);
-                                    if (context.mounted) {
-                                      Provider.of<SleepProvider>(context, listen: false).resetState();
-                                      Provider.of<AlarmProvider>(context, listen: false).resetState();
-                                      Navigator.of(dialogContext).pop();
-                                      Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);
-                                    }
-                                  },
-                                  child: Text("Reset", style: bodyStyle(fontSize: 10)),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                ],
+                    _SettingsGroup(
+                      title: 'ACCOUNT',
+                      children: [
+                        _ActionSetting(
+                          icon: CupertinoIcons.person_crop_circle,
+                          title: 'Edit profile',
+                          subtitle: 'Name and personal details',
+                          onTap: _showEditProfileDialog,
+                        ),
+                        const _Divider(),
+                        _SwitchSetting(
+                          title: 'Notifications',
+                          subtitle: 'Alarm and reminder alerts',
+                          value: _notificationsEnabled,
+                          onChanged: _updateNotifications,
+                        ),
+                        const _Divider(),
+                        _SwitchSetting(
+                          title: 'Cloud sync',
+                          subtitle: 'Back up your data',
+                          value: _cloudSyncEnabled,
+                          onChanged: _updateCloudSync,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _SettingsGroup(
+                      title: 'APPEARANCE',
+                      children: [
+                        _SwitchSetting(
+                          title: 'Dark Mode',
+                          subtitle: 'Easier on the eyes at night',
+                          value: darkModeNotifier.value,
+                          onChanged: (val) async {
+                            await _storage.saveSetting('darkMode', val);
+                            darkModeNotifier.value = val;
+                            setState(() {});
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _SettingsGroup(
+                      title: 'APP',
+                      children: [
+                        _SwitchSetting(
+                          title: 'Haptic feedback',
+                          subtitle: 'Vibrate on interactions',
+                          value: _hapticFeedbackEnabled,
+                          onChanged: _updateHapticFeedback,
+                        ),
+                        const _Divider(),
+                        _ActionSetting(
+                          icon: CupertinoIcons.lock_shield,
+                          title: 'Privacy',
+                          subtitle: 'Data stays on this device',
+                          onTap: _showPrivacyDialog,
+                        ),
+                        const _Divider(),
+                        _ActionSetting(
+                          icon: CupertinoIcons.info_circle,
+                          title: 'About',
+                          subtitle: 'Version 1.0.0',
+                          onTap: _showAboutDialog,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 14),
+                    _SettingsGroup(
+                      title: 'DATA',
+                      children: [
+                        _ActionSetting(
+                          icon: CupertinoIcons.refresh,
+                          title: 'Reset Application',
+                          subtitle: 'Clear all data and start fresh',
+                          onTap: () async {
+                            showDialog<void>(
+                              context: context,
+                              builder: (dialogContext) => AlertDialog(
+                                backgroundColor: surface,
+                                title: Text("Reset App?", style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                                content: Text("This will clear all your sleep history, dream notes, and goals. This cannot be undone.", style: bodyStyle(fontSize: 10, color: textMid)),
+                                actions: [
+                                  NesButton(
+                                    type: NesButtonType.normal,
+                                    onPressed: () => Navigator.of(dialogContext).pop(),
+                                    child: Text("Cancel", style: bodyStyle(fontSize: 10, color: Colors.black)),
+                                  ),
+                                  NesButton(
+                                    type: NesButtonType.error,
+                                    onPressed: () async {
+                                      final storage = HiveStorage();
+                                      await storage.saveSetting('onboarding_complete', false);
+                                      await storage.saveSetting('sessions_list', null);
+                                      await storage.saveSetting('dream_notes_list', null);
+                                      await storage.saveSetting('alarm_config', null);
+                                      await storage.saveSetting('sleep_goal', null);
+                                      if (context.mounted) {
+                                        Provider.of<SleepProvider>(context, listen: false).resetState();
+                                        Provider.of<AlarmProvider>(context, listen: false).resetState();
+                                        Navigator.of(dialogContext).pop();
+                                        Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);
+                                      }
+                                    },
+                                    child: Text("Reset", style: bodyStyle(fontSize: 10)),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

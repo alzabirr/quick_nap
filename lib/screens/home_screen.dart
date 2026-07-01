@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:math';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:provider/provider.dart';
 import 'package:nes_ui/nes_ui.dart';
@@ -22,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTabIndex = 0;
   Duration? _activeAlarmDuration;
+  bool _isCustomAlarmActive = false;
 
   @override
   Widget build(BuildContext context) {
@@ -103,15 +105,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                 const Icon(CupertinoIcons.alarm_fill, size: 48, color: Color(0xffffffff)),
                                 const SizedBox(height: 16),
                                 Text(
-                                  "SMART ALARM",
+                                  "TIME TO WAKE UP!",
                                   style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold),
                                 ).animate(onPlay: (controller) => controller.repeat(reverse: true))
                                  .shimmer(duration: 600.ms, color: const Color(0xffe76e55)),
-                                const SizedBox(height: 8),
-                                Text(
-                                  "Playing: ${alarmProvider.config.soundName}",
-                                  style: bodyStyle(fontSize: 10, color: textMid),
-                                ),
                               ],
                             ),
                           ),
@@ -122,10 +119,33 @@ class _HomeScreenState extends State<HomeScreen> {
                                 child: NesButton(
                                   type: NesButtonType.normal,
                                   onPressed: () {
-                                    alarmProvider.snoozeAlarm();
+                                    alarmProvider.dismissAlarm();
+                                    setState(() {
+                                      _activeAlarmDuration = null;
+                                    });
+                                    final random = Random();
+                                    final gameConstructors = <Widget Function()>[
+                                      () => const MemoryMatchGame(),
+                                      () => const ColorReactionGame(),
+                                      () => const WordScrambleGame(),
+                                      () => const MathChallengeGame(),
+                                      () => const SimonSaysGame(),
+                                      () => const TicTacToeGame(),
+                                      () => const BubblePopGame(),
+                                      () => const TypingSpeedGame(),
+                                      () => const PuzzleSlideGame(),
+                                      () => const NumberMemoryGame(),
+                                      () => const ColorCatchGame(),
+                                      () => const WordChainGame(),
+                                      () => const RapidTapGame(),
+                                    ];
+                                    final selectedGame = gameConstructors[random.nextInt(gameConstructors.length)]();
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(builder: (context) => selectedGame),
+                                    );
                                   },
                                   child: Text(
-                                    "SNOOZE (9m)",
+                                    "PLAY GAME",
                                     style: bodyStyle(fontSize: 10, color: Colors.black),
                                   ),
                                 ),
@@ -196,7 +216,7 @@ class _HomeScreenState extends State<HomeScreen> {
           NesButton(
             type: NesButtonType.normal,
             onPressed: () => Navigator.of(ctx).pop(),
-            child: Text('No', style: bodyStyle(fontSize: 10, color: Colors.black)),
+            child: Text('No', style: bodyStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black)),
           ),
           NesButton(
             type: NesButtonType.error,
@@ -204,7 +224,10 @@ class _HomeScreenState extends State<HomeScreen> {
               Navigator.of(ctx).pop();
               final alarmProvider = Provider.of<AlarmProvider>(context, listen: false);
               alarmProvider.updateConfig(alarmProvider.config.copyWith(isEnabled: false));
-              setState(() => _activeAlarmDuration = null);
+              setState(() {
+                _activeAlarmDuration = null;
+                _isCustomAlarmActive = false;
+              });
               NesSnackbar.show(context, text: 'Alarm cancelled');
             },
             child: Text('Yes', style: bodyStyle(fontSize: 10)),
@@ -288,6 +311,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   
                   setState(() {
                     _activeAlarmDuration = duration;
+                    _isCustomAlarmActive = false;
                   });
                   
                   Navigator.of(sheetContext).pop();
@@ -304,231 +328,296 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ================= TAB 0: DASHBOARD =================
   Widget _buildDashboardTab(double bottomPadding) {
-    return ListView(
-      padding: EdgeInsets.fromLTRB(20, 16, 20, bottomPadding),
-      physics: const BouncingScrollPhysics(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          "QUICK NAP",
-          style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1),
-        const SizedBox(height: 16),
-
-        // Power Nap
-        GestureDetector(
-          onTap: _activeAlarmDuration == const Duration(minutes: 20)
-              ? _cancelActiveAlarm
-              : () => _selectPresetAndSetAlarm(const Duration(minutes: 20), "Power Nap", "Power Nap"),
-          child: glassCard(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: _activeAlarmDuration == const Duration(minutes: 20)
-                        ? successColor
-                        : primary,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: Center(
-                    child: Icon(
-                      _activeAlarmDuration == const Duration(minutes: 20) ? CupertinoIcons.check_mark : CupertinoIcons.bolt_fill,
-                      color: Colors.white,
-                      size: 20,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "POWER NAP",
-                      style: bodyStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                    Text(
-                      _activeAlarmDuration == const Duration(minutes: 20) ? "Tap to cancel" : "20 Min Booster",
-                      style: bodyStyle(
-                        color: _activeAlarmDuration == const Duration(minutes: 20) ? successColor : textMid,
-                        fontSize: 10,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+        // Pinned Header Row
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          child: Row(
+            children: [
+              Text(
+                'QUICK NAP',
+                style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ).animate().fadeIn(duration: 400.ms).slideX(begin: -0.1),
+            ],
           ),
         ),
-        const SizedBox(height: 12),
-
-        // Sleep Cycles
-        Text(
-          "SLEEP CYCLES",
-          style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        GridView.count(
-          shrinkWrap: true,
-          physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: 1.25,
-          children: [
-            _buildCycleGridItem(
-              cycleNumber: "1",
-              cycleBadge: "1 CYCLE",
-              timeText: "1h 30m",
-              subtitle: "Survival Sleep",
-              duration: const Duration(hours: 1, minutes: 30),
-            ),
-            _buildCycleGridItem(
-              cycleNumber: "2",
-              cycleBadge: "2 CYCLES",
-              timeText: "3h 00m",
-              subtitle: "Deep Sleep Peak",
-              duration: const Duration(hours: 3),
-            ),
-            _buildCycleGridItem(
-              cycleNumber: "3",
-              cycleBadge: "3 CYCLES",
-              timeText: "4h 30m",
-              subtitle: "Memory Boost",
-              duration: const Duration(hours: 4, minutes: 30),
-            ),
-            _buildCycleGridItem(
-              cycleNumber: "4",
-              cycleBadge: "4 CYCLES",
-              timeText: "6h 00m",
-              subtitle: "Functional Rest",
-              duration: const Duration(hours: 6),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-
-        // Recommended
-        Text(
-          "RECOMMENDED",
-          style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-
-        // 7h 30m Card
-        GestureDetector(
-          onTap: _activeAlarmDuration == const Duration(hours: 7, minutes: 30)
-              ? _cancelActiveAlarm
-              : () => _selectPresetAndSetAlarm(const Duration(hours: 7, minutes: 30), "Recommended Rest", "5 Cycles"),
-          child: glassCard(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : primary,
-                    border: Border.all(color: Colors.white, width: 2),
-                  ),
-                  child: Center(
-                    child: _activeAlarmDuration == const Duration(hours: 7, minutes: 30)
-                        ? const Icon(CupertinoIcons.check_mark, color: Colors.white, size: 18)
-                        : Text("5", style: bodyStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(20, 4, 20, bottomPadding),
+            physics: const BouncingScrollPhysics(),
+            children: [
+              // Power Nap Card
+              GestureDetector(
+                onTap: _activeAlarmDuration == const Duration(minutes: 20)
+                    ? _cancelActiveAlarm
+                    : () => _selectPresetAndSetAlarm(const Duration(minutes: 20), "Power Nap", "Power Nap"),
+                child: glassCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
                     children: [
-                      Row(
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _activeAlarmDuration == const Duration(minutes: 20)
+                              ? successColor
+                              : primary,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: Center(
+                          child: Icon(
+                            _activeAlarmDuration == const Duration(minutes: 20) ? CupertinoIcons.check_mark : CupertinoIcons.bolt_fill,
+                            color: Colors.white,
+                            size: 20,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text("7h 30m", style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : primary,
-                                width: 1,
-                              ),
-                            ),
-                            child: Text(
-                              _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? "ALARM SET" : "RECOMMENDED",
-                              style: TextStyle(
-                                color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : warningColor,
-                                fontSize: 8,
-                                decoration: TextDecoration.none,
-                                fontWeight: FontWeight.bold,
-                              ),
+                          Text(
+                            "POWER NAP",
+                            style: bodyStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          Text(
+                            _activeAlarmDuration == const Duration(minutes: 20) ? "Tap to cancel" : "20 Min Booster",
+                            style: bodyStyle(
+                              color: _activeAlarmDuration == const Duration(minutes: 20) ? successColor : textMid,
+                              fontSize: 10,
                             ),
                           ),
                         ],
                       ),
-                      Text(
-                        _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? "Tap to cancel" : "5 Cycles - Optimal",
-                        style: bodyStyle(color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : textMid, fontSize: 8),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Sleep Cycles
+              Text(
+                "SLEEP CYCLES",
+                style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 14),
+              GridView.count(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                crossAxisSpacing: 16,
+                mainAxisSpacing: 16,
+                childAspectRatio: 1.25,
+                children: [
+                  _buildCycleGridItem(
+                    cycleNumber: "1",
+                    cycleBadge: "1 CYCLE",
+                    timeText: "1h 30m",
+                    subtitle: "Survival Sleep",
+                    duration: const Duration(hours: 1, minutes: 30),
+                  ),
+                  _buildCycleGridItem(
+                    cycleNumber: "2",
+                    cycleBadge: "2 CYCLES",
+                    timeText: "3h 00m",
+                    subtitle: "Deep Sleep Peak",
+                    duration: const Duration(hours: 3),
+                  ),
+                  _buildCycleGridItem(
+                    cycleNumber: "3",
+                    cycleBadge: "3 CYCLES",
+                    timeText: "4h 30m",
+                    subtitle: "Memory Boost",
+                    duration: const Duration(hours: 4, minutes: 30),
+                  ),
+                  _buildCycleGridItem(
+                    cycleNumber: "4",
+                    cycleBadge: "4 CYCLES",
+                    timeText: "6h 00m",
+                    subtitle: "Functional Rest",
+                    duration: const Duration(hours: 6),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+
+              // Recommended
+              Text(
+                "RECOMMENDED",
+                style: headingStyle(fontSize: 12, color: primary, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+
+              // 7h 30m Card
+              GestureDetector(
+                onTap: _activeAlarmDuration == const Duration(hours: 7, minutes: 30)
+                    ? _cancelActiveAlarm
+                    : () => _selectPresetAndSetAlarm(const Duration(hours: 7, minutes: 30), "Recommended Rest", "5 Cycles"),
+                child: glassCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : primary,
+                          border: Border.all(color: Colors.white, width: 2),
+                        ),
+                        child: Center(
+                          child: _activeAlarmDuration == const Duration(hours: 7, minutes: 30)
+                              ? const Icon(CupertinoIcons.check_mark, color: Colors.white, size: 18)
+                              : Text("5", style: bodyStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text("7h 30m", style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                                const SizedBox(width: 8),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                      color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : primary,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? "ALARM SET" : "RECOMMENDED",
+                                    style: TextStyle(
+                                      color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : warningColor,
+                                      fontSize: 8,
+                                      decoration: TextDecoration.none,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Text(
+                              _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? "Tap to cancel" : "5 Cycles - Optimal",
+                              style: bodyStyle(color: _activeAlarmDuration == const Duration(hours: 7, minutes: 30) ? successColor : textMid, fontSize: 8),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 12),
+
+              // 9h 00m Card
+              GestureDetector(
+                onTap: _activeAlarmDuration == const Duration(hours: 9)
+                    ? _cancelActiveAlarm
+                    : () => _selectPresetAndSetAlarm(const Duration(hours: 9), "Extended Rest", "6 Cycles"),
+                child: glassCard(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: _activeAlarmDuration == const Duration(hours: 9) ? successColor : surface,
+                          border: Border.all(color: textMid, width: 2),
+                        ),
+                        child: Center(
+                          child: _activeAlarmDuration == const Duration(hours: 9)
+                              ? const Icon(CupertinoIcons.check_mark, color: Colors.white, size: 18)
+                              : Text("6", style: bodyStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textMid)),
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text("9h 00m", style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
+                            Text(
+                              _activeAlarmDuration == const Duration(hours: 9) ? "Tap to cancel" : "Full Rest (6 Cycles)",
+                              style: bodyStyle(color: _activeAlarmDuration == const Duration(hours: 9) ? successColor : textMid, fontSize: 10),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+
+              // Custom Alarm Button or Active Alarm Display
+              () {
+                final alarmProvider = Provider.of<AlarmProvider>(context);
+                return alarmProvider.config.isEnabled && _isCustomAlarmActive
+                    ? GestureDetector(
+                        onTap: _cancelActiveAlarm,
+                        child: glassCard(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: successColor,
+                                  border: Border.all(color: Colors.white, width: 2),
+                                ),
+                                child: const Center(
+                                  child: Icon(
+                                    CupertinoIcons.alarm,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "ALARM ACTIVE",
+                                      style: bodyStyle(fontSize: 10, color: successColor, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      "Set for ${TimeOfDay(hour: alarmProvider.config.hour, minute: alarmProvider.config.minute).format(context)}",
+                                      style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      "Tap to cancel",
+                                      style: bodyStyle(fontSize: 8, color: textMid),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : NesButton(
+                        type: NesButtonType.normal,
+                        onPressed: _showCustomAlarmBottomSheet,
+                        child: Text("CUSTOM ALARM", style: bodyStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black)),
+                      );
+              }(),
+              const SizedBox(height: 16),
+            ],
           ),
         ),
-        const SizedBox(height: 10),
-
-        // 9h 00m Card
-        GestureDetector(
-          onTap: _activeAlarmDuration == const Duration(hours: 9)
-              ? _cancelActiveAlarm
-              : () => _selectPresetAndSetAlarm(const Duration(hours: 9), "Extended Rest", "6 Cycles"),            child: glassCard(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: Row(
-                children: [
-                  Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: _activeAlarmDuration == const Duration(hours: 9) ? successColor : surface,
-                      border: Border.all(color: textMid, width: 2),
-                    ),
-                    child: Center(
-                      child: _activeAlarmDuration == const Duration(hours: 9)
-                          ? const Icon(CupertinoIcons.check_mark, color: Colors.white, size: 18)
-                          : Text("6", style: bodyStyle(fontSize: 14, fontWeight: FontWeight.bold, color: textMid)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text("9h 00m", style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
-                        Text(
-                          _activeAlarmDuration == const Duration(hours: 9) ? "Tap to cancel" : "Full Rest (6 Cycles)",
-                          style: bodyStyle(color: _activeAlarmDuration == const Duration(hours: 9) ? successColor : textMid, fontSize: 10),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-        ),
-        const SizedBox(height: 16),
-
-        // Custom Alarm Button
-        NesButton(
-          type: NesButtonType.normal,
-          onPressed: _showCustomAlarmBottomSheet,
-          child: Text("CUSTOM ALARM", style: bodyStyle(fontSize: 10, color: Colors.black)),
-        ),
-        const SizedBox(height: 16),
       ],
     );
   }
@@ -564,7 +653,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Center(
                     child: isActive
                         ? const Icon(CupertinoIcons.check_mark, color: Colors.white, size: 12)
-                        : Text(cycleNumber, style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold, color: textMid)),
+                        : Text(cycleNumber, style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold, color: textDark)),
                   ),
                 ),
                 Container(
@@ -576,7 +665,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Text(
                     cycleBadge,
                     style: TextStyle(
-                      color: isActive ? successColor : Colors.white,
+                      color: isActive ? successColor : textDark,
                       fontSize: 8,
                       decoration: TextDecoration.none,
                       fontWeight: FontWeight.bold,
@@ -603,87 +692,105 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // ================= TAB 3: COACHING =================
   Widget _buildCoachingTab(double bottomPadding) {
-    return ListView(
-      padding: EdgeInsets.fromLTRB(20, 12, 20, bottomPadding),
-      physics: const BouncingScrollPhysics(),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text("QUICK NAP", style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 4),
-        Text("Pros & Cons", style: bodyStyle(fontSize: 10, color: textMid)),
-        const SizedBox(height: 16),
-
-        Text("PROS", style: bodyStyle(fontSize: 10, color: successColor, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.bolt_fill, color: successColor, title: "Boosts Energy", subtitle: "A short nap can quickly reduce fatigue and help you feel refreshed."),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.eye_fill, color: successColor, title: "Improves Focus", subtitle: "Helps you stay alert, make fewer mistakes, and perform better."),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.book_fill, color: successColor, title: "Enhances Memory", subtitle: "Can improve learning, memory retention, and problem-solving."),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.smiley_fill, color: successColor, title: "Improves Mood", subtitle: "A quick nap may reduce stress, irritability, and improve mood."),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.heart_fill, color: successColor, title: "Supports Heart Health", subtitle: "Some studies suggest occasional naps may help the cardiovascular system."),
-        const SizedBox(height: 16),
-
-        Text("CONS", style: bodyStyle(fontSize: 10, color: accent, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.exclamationmark_triangle_fill, color: accent, title: "Sleep Inertia", subtitle: "Napping over 30 minutes can leave you feeling groggy and disoriented."),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.moon_fill, color: accent, title: "Disrupts Night Sleep", subtitle: "Late afternoon or evening naps can make it harder to fall asleep."),
-        const SizedBox(height: 8),
-        _buildInfoCard(icon: CupertinoIcons.question_circle_fill, color: accent, title: "Not for Everyone", subtitle: "Some people wake up feeling more tired instead of refreshed."),
-        const SizedBox(height: 16),
-
-        Text("BEST PRACTICES", style: bodyStyle(fontSize: 10, color: primary, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        glassCard(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+        // Pinned Header Row
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
+          child: Row(
             children: [
-              _buildPracticeRow("Ideal Duration", "10-20 minutes"),
-              const SizedBox(height: 8),
-              _buildPracticeRow("Best Time", "Between 1:00 PM and 3:00 PM"),
-              const SizedBox(height: 8),
-              _buildPracticeRow("Avoid", "Naps after 4:00 PM"),
-              const SizedBox(height: 8),
-              _buildPracticeRow("Environment", "Quiet, cool, dimly lit place"),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("QUICK NAP", style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 4),
+                  Text("Pros & Cons", style: bodyStyle(fontSize: 8, color: textMid)),
+                ],
+              ),
             ],
           ),
         ),
-        const SizedBox(height: 16),
-
-        Text("RECOMMENDED NAP LENGTHS", style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        glassCard(
-          padding: const EdgeInsets.all(12),
-          child: Column(
+        Expanded(
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(20, 4, 20, bottomPadding),
+            physics: const BouncingScrollPhysics(),
             children: [
-              _buildDurationRow("10-20 min", "Best for quick energy boost"),
-              const Divider(color: Color(0xff808080), height: 16),
-              _buildDurationRow("20-30 min", "Still beneficial, slight grogginess"),
-              const Divider(color: Color(0xff808080), height: 16),
-              _buildDurationRow("60 min", "Improves memory, grogginess likely"),
-              const Divider(color: Color(0xff808080), height: 16),
-              _buildDurationRow("90 min", "Full sleep cycle, reduces grogginess"),
-            ],
-          ),
-        ),
-        const SizedBox(height: 16),
+              Text("PROS", style: bodyStyle(fontSize: 10, color: successColor, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.bolt_fill, color: successColor, title: "Boosts Energy", subtitle: "A short nap can quickly reduce fatigue and help you feel refreshed."),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.eye_fill, color: successColor, title: "Improves Focus", subtitle: "Helps you stay alert, make fewer mistakes, and perform better."),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.book_fill, color: successColor, title: "Enhances Memory", subtitle: "Can improve learning, memory retention, and problem-solving."),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.smiley_fill, color: successColor, title: "Improves Mood", subtitle: "A quick nap may reduce stress, irritability, and improve mood."),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.heart_fill, color: successColor, title: "Supports Heart Health", subtitle: "Some studies suggest occasional naps may help the cardiovascular system."),
+              const SizedBox(height: 16),
 
-        Text("OVERALL", style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold)),
-        const SizedBox(height: 8),
-        glassCard(
-          padding: const EdgeInsets.all(12),
-          child: Text(
-            "A 10-20 minute quick nap is generally the most effective choice. It provides a noticeable boost in energy, focus, and mood while minimizing grogginess.",
-            style: bodyStyle(fontSize: 10, height: 1.5),
-          ),
-        ),
+              Text("CONS", style: bodyStyle(fontSize: 10, color: accent, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.exclamationmark_triangle_fill, color: accent, title: "Sleep Inertia", subtitle: "Napping over 30 minutes can leave you feeling groggy and disoriented."),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.moon_fill, color: accent, title: "Disrupts Night Sleep", subtitle: "Late afternoon or evening naps can make it harder to fall asleep."),
+              const SizedBox(height: 8),
+              _buildInfoCard(icon: CupertinoIcons.question_circle_fill, color: accent, title: "Not for Everyone", subtitle: "Some people wake up feeling more tired instead of refreshed."),
+              const SizedBox(height: 16),
+
+              Text("BEST PRACTICES", style: bodyStyle(fontSize: 10, color: primary, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              glassCard(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildPracticeRow("Ideal Duration", "10-20 minutes"),
+                    const SizedBox(height: 8),
+                    _buildPracticeRow("Best Time", "Between 1:00 PM and 3:00 PM"),
+                    const SizedBox(height: 8),
+                    _buildPracticeRow("Avoid", "Naps after 4:00 PM"),
+                    const SizedBox(height: 8),
+                    _buildPracticeRow("Environment", "Quiet, cool, dimly lit place"),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              Text("RECOMMENDED NAP LENGTHS", style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              glassCard(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  children: [
+                    _buildDurationRow("10-20 min", "Best for quick energy boost"),
+                    const Divider(color: Color(0xff808080), height: 16),
+                    _buildDurationRow("20-30 min", "Still beneficial, slight grogginess"),
+                    const Divider(color: Color(0xff808080), height: 16),
+                    _buildDurationRow("60 min", "Improves memory, grogginess likely"),
+                    const Divider(color: Color(0xff808080), height: 16),
+                    _buildDurationRow("90 min", "Full sleep cycle, reduces grogginess"),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+
+              Text("OVERALL", style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 8),
+              glassCard(
+                padding: const EdgeInsets.all(12),
+                child: Text(
+                  "A 10-20 minute quick nap is generally the most effective choice. It provides a noticeable boost in energy, focus, and mood while minimizing grogginess.",
+                  style: bodyStyle(fontSize: 10, height: 1.5),
+                ),
+              ),
         const SizedBox(height: 16),
       ],
-    );
-  }
+    ),
+  ),
+],
+);
+}
 
   Widget _buildInfoCard({required IconData icon, required Color color, required String title, required String subtitle}) {
     return glassCard(
@@ -864,48 +971,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Sounds
-                    Text("WAKE UP SOUNDS", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 8),
-                    NesContainer(
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Sound', style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                              DropdownButton<String>(
-                                value: selectedSound,
-                                dropdownColor: surface,
-                                style: TextStyle(color: primary, decoration: TextDecoration.none, fontSize: 10),
-                                underline: const SizedBox(),
-                                items: sounds.map((sound) {
-                                  return DropdownMenuItem(value: sound, child: Text(sound, style: const TextStyle(fontSize: 10)));
-                                }).toList(),
-                                onChanged: (value) {
-                                  if (value != null) setState(() => selectedSound = value);
-                                },
-                              ),
-                            ],
-                          ),
-                          const Divider(color: Color(0xff808080), height: 12),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text('Gradual Volume', style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                              Switch(
-                                value: gradualVolume,
-                                activeTrackColor: primary,
-                                activeThumbColor: Colors.white,
-                                onChanged: (value) => setState(() => gradualVolume = value),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+
 
                     // Snooze Trigger
                     Text("SNOOZE TRIGGER", style: bodyStyle(fontSize: 8, color: textMid, fontWeight: FontWeight.bold)),
@@ -950,6 +1016,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           gradualVolume: gradualVolume,
                           snoozeType: selectedSnooze,
                         ));
+                        this.setState(() {
+                          _activeAlarmDuration = null;
+                          _isCustomAlarmActive = true;
+                        });
                         Navigator.of(sheetContext).pop();
                         NesSnackbar.show(context, text: 'Custom alarm set for $timeStr');
                       },

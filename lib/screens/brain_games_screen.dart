@@ -30,15 +30,6 @@ class _BrainGamesScreenState extends State<BrainGamesScreen> {
                 child: Row(
                   children: [
                     Text('BRAIN GAMES', style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    const Spacer(),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: const Color(0xfff7d51d).withValues(alpha: 0.2),
-                        border: Border.all(color: const Color(0xfff7d51d), width: 1),
-                      ),
-                      child: Text('TRAIN MIND', style: bodyStyle(color: const Color(0xfff7d51d), fontSize: 8, fontWeight: FontWeight.bold)),
-                    ),
                   ],
                 ),
               ),
