@@ -42,6 +42,7 @@ dependencies:
   timezone: ^0.11.0
   flutter_timezone: ^5.1.0
   nes_ui: ^0.30.0
+  flutter_alarm_background_trigger: ^1.0.2
 dev_dependencies:
   flutter_test:
     sdk: flutter

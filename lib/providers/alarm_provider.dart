@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 import '../models/alarm_config.dart';
 import '../services/alarm_notification_service.dart';
 import '../storage/hive_storage.dart';
@@ -13,6 +14,7 @@ class AlarmProvider with ChangeNotifier {
   bool _isRinging = false;
   Timer? _alarmCheckTimer;
   String? _lastTriggeredMinute;
+  StreamSubscription<AlarmItem>? _bgAlarmSubscription;
   
   AlarmConfig get config => _config;
   bool get isRinging => _isRinging;
@@ -20,11 +22,25 @@ class AlarmProvider with ChangeNotifier {
   AlarmProvider() {
     _loadConfig();
     _startAlarmCheck();
+    _listenToBackgroundTrigger();
+  }
+
+  /// Listens to alarm events from flutter_alarm_background_trigger.
+  /// This fires when the alarm time is reached, even if the app was killed.
+  void _listenToBackgroundTrigger() {
+    _bgAlarmSubscription = AlarmNotificationService.onAlarmTriggered.listen((alarm) {
+      if (!_isRinging && _config.isEnabled) {
+        triggerAlarm();
+      }
+    });
   }
 
   void _startAlarmCheck() {
     _alarmCheckTimer?.cancel();
-    // Check every 30 seconds instead of every second to reduce battery drain
+    // Poll every 30 seconds as a fallback detection mechanism.
+    // The primary trigger comes from flutter_alarm_background_trigger (Android)
+    // or the local notification (iOS), but this ensures the alarm fires
+    // even if the background trigger is unavailable.
     _alarmCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
       if (_config.isEnabled && !_isRinging) {
         final now = DateTime.now();
@@ -109,6 +125,7 @@ class AlarmProvider with ChangeNotifier {
   @override
   void dispose() {
     _alarmCheckTimer?.cancel();
+    _bgAlarmSubscription?.cancel();
     super.dispose();
   }
 }
