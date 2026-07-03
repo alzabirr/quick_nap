@@ -153,8 +153,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   void _showAboutDialog() {
     _showInfoDialog(
-      title: 'About Nappy',
-      message: 'Nappy 1.0.0\nQuick sleep tracking and alarm app.',
+      title: 'About Quick Nap',
+      message: 'Quick Nap 1.0.0\nSleep cycle tracker & smart alarm app.',
     );
   }
 

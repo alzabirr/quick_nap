@@ -156,30 +156,35 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
                       Text(_gameState == 2 ? "Wait for it..." : "TAP!", textAlign: TextAlign.center,
                           style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold, color: _gameState == 3 ? const Color(0xff92cc41) : Colors.white)),
                       const SizedBox(height: 24),
-                      Container(
-                        height: 320,
-                        decoration: BoxDecoration(color: surface, border: Border.all(color: textMid, width: 2)),
-                        child: Stack(
-                          children: [
-                            if (_gameState == 3)
-                              Positioned(
-                                left: _targetX * (280 - _targetSize),
-                                top: _targetY * (320 - _targetSize),
-                                child: GestureDetector(
-                                  onTapDown: (_) => _onTargetTapped(),
-                                  child: Container(
-                                    width: _targetSize,
-                                    height: _targetSize,
-                                    decoration: BoxDecoration(
-                                      color: accent,
-                                      border: Border.all(color: Colors.white, width: 3),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final double gameWidth = constraints.maxWidth;
+                          return Container(
+                            height: 320,
+                            decoration: BoxDecoration(color: surface, border: Border.all(color: textMid, width: 2)),
+                            child: Stack(
+                              children: [
+                                if (_gameState == 3)
+                                  Positioned(
+                                    left: _targetX * (gameWidth - _targetSize),
+                                    top: _targetY * (320 - _targetSize),
+                                    child: GestureDetector(
+                                      onTapDown: (_) => _onTargetTapped(),
+                                      child: Container(
+                                        width: _targetSize,
+                                        height: _targetSize,
+                                        decoration: BoxDecoration(
+                                          color: accent,
+                                          border: Border.all(color: Colors.white, width: 3),
+                                        ),
+                                        child: const Center(child: Icon(CupertinoIcons.bolt_fill, color: Colors.white, size: 36)),
+                                      ).animate().scale(duration: 150.ms),
                                     ),
-                                    child: const Center(child: Icon(CupertinoIcons.bolt_fill, color: Colors.white, size: 36)),
-                                  ).animate().scale(duration: 150.ms),
-                                ),
-                              ),
-                          ],
-                        ),
+                                  ),
+                              ],
+                            ),
+                          );
+                        },
                       ),
                     ] else if (_gameState == 4) ...[
                       glassCard(

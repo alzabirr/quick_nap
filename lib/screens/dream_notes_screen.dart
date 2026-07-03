@@ -27,20 +27,6 @@ class DreamNotesScreen extends StatelessWidget {
       return b.date.compareTo(a.date); // Newest first
     });
 
-    final Map<String, String> categoryLabels = {
-      'dream': 'DREAM',
-      'lucid': 'LUCID',
-      'nightmare': 'NIGHTMARE',
-      'reflection': 'REFLECTION',
-    };
-
-    final Map<String, Color> categoryColors = {
-      'dream': primary,
-      'lucid': const Color(0xff92cc41),
-      'nightmare': accent,
-      'reflection': const Color(0xfff7d51d),
-    };
-
     return Scaffold(
       backgroundColor: bgLight,
       body: AmbientBackground(
@@ -105,12 +91,10 @@ class DreamNotesScreen extends StatelessWidget {
                         physics: const BouncingScrollPhysics(),
                         itemCount: notes.length,
                         itemBuilder: (context, index) {
-                          final note = notes[index] as DreamNote;
+                          final note = notes[index];
                           final dateStr = DateFormat('EEEE, MMMM d').format(note.date);
-                          final catLabel = categoryLabels[note.category] ?? note.category.toUpperCase();
-                          final catColor = categoryColors[note.category] ?? primary;
 
-                           return Padding(
+                          return Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
                             child: GestureDetector(
                               onTap: () {
@@ -139,11 +123,11 @@ class DreamNotesScreen extends StatelessWidget {
                                             Text(dateStr, style: bodyStyle(fontSize: 8, fontWeight: FontWeight.bold, color: textMid)),
                                           ],
                                         ),
-                                         NesButton(
-                                           type: NesButtonType.normal,
-                                           onPressed: () => _confirmDelete(context, notesProvider, note),
-                                           child: const Icon(CupertinoIcons.trash, color: Color(0xffe76e55), size: 12),
-                                         ),
+                                        NesButton(
+                                          type: NesButtonType.normal,
+                                          onPressed: () => _confirmDelete(context, notesProvider, note),
+                                          child: const Icon(CupertinoIcons.trash, color: Color(0xffe76e55), size: 12),
+                                        ),
                                       ],
                                     ),
                                   ],

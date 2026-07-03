@@ -27,8 +27,8 @@ void main() {
       ),
     );
 
-    // Verify Dashboard header text is present
-    expect(find.textContaining('Set Alarm'), findsOneWidget);
+    // Verify the app title is present
+    expect(find.textContaining('QUICK NAP'), findsOneWidget);
 
     // Settle all animations/timers
     await tester.pumpAndSettle();

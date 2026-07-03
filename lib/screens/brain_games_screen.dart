@@ -1036,7 +1036,10 @@ class _TypingSpeedGameState extends State<TypingSpeedGame> {
   void _checkInput(String value) {
     if (!_started) return;
     setState(() {
-      if (value == _currentWord) { _score += _currentWord.length * 2; _nextWord(); }
+      if (value == _currentWord) {
+          _score += _currentWord.length * 2;
+          _nextWord();
+        }
     });
   }
 
@@ -1367,14 +1370,25 @@ class _ColorCatchGameState extends State<ColorCatchGame> {
     setState(() { _score = 0; _timeLeft = 30; _started = true; _targetColor = Random().nextInt(4); });
     
     _timer = Timer.periodic(const Duration(milliseconds: 50), (timer) {
-      if (mounted) setState(() {
-        _ballY += 8;
-        if (_ballY > 600) { _ballY = 0; _ballX = Random().nextDouble() * 300 + 20; _targetColor = Random().nextInt(4); }
-      });
+      if (mounted) {
+        setState(() {
+          _ballY += 8;
+          if (_ballY > 600) {
+            _ballY = 0;
+            _ballX = Random().nextDouble() * 300 + 20;
+            _targetColor = Random().nextInt(4);
+          }
+        });
+      }
     });
     
     _gameTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() { _timeLeft--; if (_timeLeft <= 0) _endGame(); });
+      setState(() {
+        _timeLeft--;
+        if (_timeLeft <= 0) {
+          _endGame();
+        }
+      });
     });
   }
 

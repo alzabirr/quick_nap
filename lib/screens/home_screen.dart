@@ -703,9 +703,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text("QUICK NAP", style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  Text("COACHING", style: headingStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 4),
-                  Text("Pros & Cons", style: bodyStyle(fontSize: 8, color: textMid)),
+                  Text("Nap Guide", style: bodyStyle(fontSize: 8, color: textMid)),
                 ],
               ),
             ],
@@ -887,7 +887,6 @@ class _HomeScreenState extends State<HomeScreen> {
     String selectedSnooze = initialConfig.snoozeType;
 
     final List<int> windows = [15, 30, 45, 60, 90];
-    final List<String> sounds = ['Morning Ambient', 'Forest Rain', 'Soft Chimes', 'Ocean Breath', 'Birds Chorus'];
     final List<String> snoozes = ['shake', 'tap'];
 
     showModalBottomSheet<void>(
