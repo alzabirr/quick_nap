@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -103,22 +102,22 @@ class AlarmNotificationService {
     }
   }
 
-  static Future<void> scheduleAlarm(AlarmConfig config, {bool requestPermission = false}) async {
+  static Future<void> scheduleAlarm(AlarmConfig config) async {
     if (kIsWeb || !config.isEnabled) return;
 
-    // Schedule local notification (cross-platform fallback)
+    // Schedule local notification (cross-platform, works in background)
     try {
       await _notifications.cancel(id: _alarmNotificationId);
 
       await _notifications.zonedSchedule(
         id: _alarmNotificationId,
-        title: 'Smart Alarm',
-        body: 'Time to wake up. Playing: ${config.soundName}',
+        title: 'Quick Nap',
+        body: 'Time to wake up!',
         scheduledDate: _nextAlarmTime(config),
         notificationDetails: NotificationDetails(
           android: AndroidNotificationDetails(
-            'smart_alarm',
-            'Smart Alarm',
+            'quick_nap_alarm',
+            'Quick Nap Alarm',
             channelDescription: 'Wake-up alarm notifications',
             importance: Importance.max,
             priority: Priority.max,
@@ -127,7 +126,7 @@ class AlarmNotificationService {
             playSound: true,
             sound: const UriAndroidNotificationSound('content://settings/system/alarm_alert'),
             audioAttributesUsage: AudioAttributesUsage.alarm,
-            additionalFlags: Int32List.fromList(<int>[4]), // Insistent (loops ringtone until dismissed)
+            additionalFlags: Int32List.fromList(<int>[4]),
             enableVibration: true,
           ),
           iOS: const DarwinNotificationDetails(
@@ -142,26 +141,17 @@ class AlarmNotificationService {
         ),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
       );
+      debugPrint('Local notification alarm scheduled for ${config.hour}:${config.minute}');
     } catch (error) {
       debugPrint('Local notification scheduling failed: $error');
     }
 
-    // Schedule background trigger (Android-only, wakes device even if killed)
+    // Also schedule background trigger for maximum reliability
     if (_backgroundTrigger != null) {
       try {
-        // Request/verify overlay permission directly for our package before scheduling if requested
-        if (requestPermission) {
-          const channel = MethodChannel('snap/overlay_permission');
-          final bool isGranted = await channel.invokeMethod<bool>('checkOverlayPermission') ?? false;
-          if (!isGranted) {
-            await channel.invokeMethod<void>('requestOverlayPermission');
-          }
-        }
-
-        // Cancel any previously scheduled background alarms first
         await _backgroundTrigger!.deleteAlarmsByUid(_alarmUid);
 
-        final alarmTime = _nextAlarmUtcTime(config);
+        final alarmTime = _nextAlarmTimeForTrigger(config);
         await _backgroundTrigger!.addAlarm(
           alarmTime,
           uid: _alarmUid,
@@ -185,6 +175,7 @@ class AlarmNotificationService {
     // Cancel local notification
     try {
       await _notifications.cancel(id: _alarmNotificationId);
+      debugPrint('Local notification alarm cancelled');
     } catch (error) {
       debugPrint('Local notification cancel failed: $error');
     }
@@ -223,9 +214,8 @@ class AlarmNotificationService {
     return scheduled;
   }
 
-  /// Returns the next alarm DateTime in UTC for the background trigger plugin
-  /// (the plugin expects a standard DateTime, not a TZDateTime).
-  static DateTime _nextAlarmUtcTime(AlarmConfig config) {
+  /// Returns the next alarm DateTime for the background trigger plugin.
+  static DateTime _nextAlarmTimeForTrigger(AlarmConfig config) {
     final now = DateTime.now();
     var scheduled = DateTime(
       now.year,
@@ -239,6 +229,6 @@ class AlarmNotificationService {
       scheduled = scheduled.add(const Duration(days: 1));
     }
 
-    return scheduled.toUtc();
+    return scheduled;
   }
 }

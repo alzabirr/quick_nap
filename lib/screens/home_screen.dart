@@ -9,6 +9,8 @@ import '../providers/alarm_provider.dart';
 import '../widgets/ambient_background.dart';
 import '../widgets/glass_card.dart';
 import '../models/alarm_config.dart';
+import '../storage/hive_storage.dart';
+import '../services/battery_optimization_service.dart';
 import 'settings_screen.dart';
 import 'dream_notes_screen.dart';
 import 'brain_games_screen.dart';
@@ -23,7 +25,15 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedTabIndex = 0;
   Duration? _activeAlarmDuration;
-  bool _isCustomAlarmActive = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final storedDuration = HiveStorage().getSetting('active_alarm_duration', null);
+    if (storedDuration != null) {
+      _activeAlarmDuration = Duration(minutes: storedDuration as int);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -123,6 +133,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     setState(() {
                                       _activeAlarmDuration = null;
                                     });
+                                    HiveStorage().saveSetting('active_alarm_duration', null);
                                     final random = Random();
                                     final gameConstructors = <Widget Function()>[
                                       () => const MemoryMatchGame(),
@@ -159,6 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     setState(() {
                                       _activeAlarmDuration = null;
                                     });
+                                    HiveStorage().saveSetting('active_alarm_duration', null);
                                   },
                                   child: Text(
                                     "DISMISS",
@@ -226,8 +238,8 @@ class _HomeScreenState extends State<HomeScreen> {
               alarmProvider.updateConfig(alarmProvider.config.copyWith(isEnabled: false));
               setState(() {
                 _activeAlarmDuration = null;
-                _isCustomAlarmActive = false;
               });
+              HiveStorage().saveSetting('active_alarm_duration', null);
               NesSnackbar.show(context, text: 'Alarm cancelled');
             },
             child: Text('Yes', style: bodyStyle(fontSize: 10)),
@@ -311,11 +323,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   
                   setState(() {
                     _activeAlarmDuration = duration;
-                    _isCustomAlarmActive = false;
                   });
+                  HiveStorage().saveSetting('active_alarm_duration', duration.inMinutes);
                   
                   Navigator.of(sheetContext).pop();
                   NesSnackbar.show(context, text: '$title alarm set for $timeStr');
+                  // Ask user to disable battery optimization for reliable alarms
+                  BatteryOptimizationService.requestExemptionIfNeeded(context);
                 },
                 child: const Text('SET ALARM'),
               ),
@@ -560,7 +574,7 @@ class _HomeScreenState extends State<HomeScreen> {
               // Custom Alarm Button or Active Alarm Display
               () {
                 final alarmProvider = Provider.of<AlarmProvider>(context);
-                return alarmProvider.config.isEnabled && _isCustomAlarmActive
+                return alarmProvider.config.isEnabled
                     ? GestureDetector(
                         onTap: _cancelActiveAlarm,
                         child: glassCard(
@@ -1017,7 +1031,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ));
                         this.setState(() {
                           _activeAlarmDuration = null;
-                          _isCustomAlarmActive = true;
                         });
                         Navigator.of(sheetContext).pop();
                         NesSnackbar.show(context, text: 'Custom alarm set for $timeStr');

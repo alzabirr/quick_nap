@@ -12,7 +12,7 @@ class AlarmConfig {
   AlarmConfig({
     required this.hour,
     required this.minute,
-    this.isEnabled = true,
+    this.isEnabled = false,
     this.smartWindowMinutes = 30,
     this.soundName = 'Morning Ambient',
     this.gradualVolume = true,
@@ -55,7 +55,7 @@ class AlarmConfig {
     return AlarmConfig(
       hour: json['hour'] as int? ?? 7,
       minute: json['minute'] as int? ?? 0,
-      isEnabled: json['isEnabled'] as bool? ?? true,
+      isEnabled: json['isEnabled'] as bool? ?? false,
       smartWindowMinutes: json['smartWindowMinutes'] as int? ?? 30,
       soundName: json['soundName'] as String? ?? 'Morning Ambient',
       gradualVolume: json['gradualVolume'] as bool? ?? true,

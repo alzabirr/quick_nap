@@ -29,15 +29,11 @@ class AlarmProvider with ChangeNotifier {
   /// This fires when the alarm time is reached, even if the app was killed.
   void _listenToBackgroundTrigger() {
     _bgAlarmSubscription = AlarmNotificationService.onAlarmTriggered.listen((alarm) {
-      if (!_isRinging && _config.isEnabled) {
-        triggerAlarm();
-      }
+      _checkAlarmTime();
     });
 
     if (AlarmNotificationService.pendingAlarms.isNotEmpty) {
-      if (!_isRinging && _config.isEnabled) {
-        triggerAlarm();
-      }
+      _checkAlarmTime();
       AlarmNotificationService.clearPendingAlarms();
     }
   }
@@ -78,9 +74,6 @@ class AlarmProvider with ChangeNotifier {
     } else {
       _config = AlarmConfig(hour: 7, minute: 0);
     }
-    if (_config.isEnabled) {
-      unawaited(AlarmNotificationService.scheduleAlarm(_config));
-    }
     notifyListeners();
   }
 
@@ -88,7 +81,7 @@ class AlarmProvider with ChangeNotifier {
     _config = newConfig;
     await _storage.saveSetting('alarm_config', jsonEncode(newConfig.toJson()));
     if (newConfig.isEnabled) {
-      await AlarmNotificationService.scheduleAlarm(newConfig, requestPermission: true);
+      await AlarmNotificationService.scheduleAlarm(newConfig);
     } else {
       await AlarmNotificationService.cancelAlarm();
     }
@@ -102,6 +95,8 @@ class AlarmProvider with ChangeNotifier {
 
   void dismissAlarm() {
     _isRinging = false;
+    _config = _config.copyWith(isEnabled: false);
+    _storage.saveSetting('alarm_config', jsonEncode(_config.toJson()));
     AlarmNotificationService.cancelAlarm();
     notifyListeners();
   }
@@ -127,10 +122,6 @@ class AlarmProvider with ChangeNotifier {
     _lastTriggeredMinute = null;
     _alarmCheckTimer?.cancel();
     _startAlarmCheck();
-    // Schedule notification for default enabled alarm, matching _loadConfig() pattern
-    if (_config.isEnabled) {
-      unawaited(AlarmNotificationService.scheduleAlarm(_config));
-    }
     notifyListeners();
   }
 

@@ -7,9 +7,10 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.PowerManager
+import android.provider.Settings
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
-import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
@@ -73,47 +74,6 @@ class MainActivity : FlutterActivity() {
 
                 startActivity(Intent.createChooser(shareIntent, "Share mind map"))
                 result.success(null)
-            }
-
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "snap/overlay_permission")
-            .setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "checkOverlayPermission" -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            result.success(Settings.canDrawOverlays(this))
-                        } else {
-                            result.success(true)
-                        }
-                    }
-                    "requestOverlayPermission" -> {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            try {
-                                // Use app detail settings - this always goes directly to
-                                // our app's own settings page on ALL devices (including NothingOS).
-                                // The user can find "Display over other apps" there.
-                                val intent = Intent(
-                                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                                    Uri.parse("package:$packageName")
-                                )
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                                startActivity(intent)
-                                result.success(true)
-                            } catch (e: Exception) {
-                                try {
-                                    // Absolute fallback: open general overlay settings
-                                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
-                                    startActivity(intent)
-                                    result.success(true)
-                                } catch (ex: Exception) {
-                                    result.error("permission_error", ex.message, null)
-                                }
-                            }
-                        } else {
-                            result.success(true)
-                        }
-                    }
-                    else -> result.notImplemented()
-                }
             }
 
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "snap/model_download")
@@ -205,6 +165,27 @@ class MainActivity : FlutterActivity() {
                         result.success(null)
                     }
 
+                    else -> result.notImplemented()
+                }
+            }
+
+        // Battery optimization exemption channel
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "com.example.snap/battery")
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "isIgnoringBatteryOptimizations" -> {
+                        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+                        result.success(pm.isIgnoringBatteryOptimizations(packageName))
+                    }
+                    "requestIgnoreBatteryOptimizations" -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                            val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                                data = Uri.parse("package:$packageName")
+                            }
+                            startActivity(intent)
+                        }
+                        result.success(null)
+                    }
                     else -> result.notImplemented()
                 }
             }
