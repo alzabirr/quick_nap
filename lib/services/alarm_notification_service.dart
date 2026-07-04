@@ -1,6 +1,8 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_alarm_background_trigger/flutter_alarm_background_trigger.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_timezone/flutter_timezone.dart';
@@ -24,6 +26,11 @@ class AlarmNotificationService {
       StreamController<AlarmItem>.broadcast();
 
   static Stream<AlarmItem> get onAlarmTriggered => _alarmEventController.stream;
+
+  // Buffer triggered alarms if no one is listening yet (e.g. during startup)
+  static final List<AlarmItem> _pendingAlarms = [];
+  static List<AlarmItem> get pendingAlarms => List.unmodifiable(_pendingAlarms);
+  static void clearPendingAlarms() => _pendingAlarms.clear();
 
   static bool _initialized = false;
   static bool _backgroundInitialized = false;
@@ -75,20 +82,20 @@ class AlarmNotificationService {
       FlutterAlarmBackgroundTrigger.initialize();
       _backgroundTrigger = FlutterAlarmBackgroundTrigger();
 
-      // Request overlay permission (needed for waking screen)
-      final permissionGranted = await _backgroundTrigger!.requestPermission();
-
       // Set up the event handler for when the alarm triggers.
       // This fires whether the app is in foreground, background, or was killed.
       _backgroundTrigger!.onForegroundAlarmEventHandler((alarms) {
         for (final alarm in alarms) {
-          _alarmEventController.add(alarm);
+          if (_alarmEventController.hasListener) {
+            _alarmEventController.add(alarm);
+          } else {
+            _pendingAlarms.add(alarm);
+          }
         }
       });
 
       _backgroundInitialized = true;
-      debugPrint(
-          'Background alarm trigger initialized (permission: $permissionGranted)');
+      debugPrint('Background alarm trigger initialized');
     } catch (e) {
       // Background trigger is Android-only; silently fall back
       debugPrint('Background alarm trigger not available: $e');
@@ -96,7 +103,7 @@ class AlarmNotificationService {
     }
   }
 
-  static Future<void> scheduleAlarm(AlarmConfig config) async {
+  static Future<void> scheduleAlarm(AlarmConfig config, {bool requestPermission = false}) async {
     if (kIsWeb || !config.isEnabled) return;
 
     // Schedule local notification (cross-platform fallback)
@@ -108,7 +115,7 @@ class AlarmNotificationService {
         title: 'Smart Alarm',
         body: 'Time to wake up. Playing: ${config.soundName}',
         scheduledDate: _nextAlarmTime(config),
-        notificationDetails: const NotificationDetails(
+        notificationDetails: NotificationDetails(
           android: AndroidNotificationDetails(
             'smart_alarm',
             'Smart Alarm',
@@ -118,14 +125,17 @@ class AlarmNotificationService {
             category: AndroidNotificationCategory.alarm,
             fullScreenIntent: true,
             playSound: true,
+            sound: const UriAndroidNotificationSound('content://settings/system/alarm_alert'),
+            audioAttributesUsage: AudioAttributesUsage.alarm,
+            additionalFlags: Int32List.fromList(<int>[4]), // Insistent (loops ringtone until dismissed)
             enableVibration: true,
           ),
-          iOS: DarwinNotificationDetails(
+          iOS: const DarwinNotificationDetails(
             presentAlert: true,
             presentSound: true,
             interruptionLevel: InterruptionLevel.timeSensitive,
           ),
-          macOS: DarwinNotificationDetails(
+          macOS: const DarwinNotificationDetails(
             presentAlert: true,
             presentSound: true,
           ),
@@ -139,6 +149,15 @@ class AlarmNotificationService {
     // Schedule background trigger (Android-only, wakes device even if killed)
     if (_backgroundTrigger != null) {
       try {
+        // Request/verify overlay permission directly for our package before scheduling if requested
+        if (requestPermission) {
+          const channel = MethodChannel('snap/overlay_permission');
+          final bool isGranted = await channel.invokeMethod<bool>('checkOverlayPermission') ?? false;
+          if (!isGranted) {
+            await channel.invokeMethod<void>('requestOverlayPermission');
+          }
+        }
+
         // Cancel any previously scheduled background alarms first
         await _backgroundTrigger!.deleteAlarmsByUid(_alarmUid);
 

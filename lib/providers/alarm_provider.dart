@@ -33,26 +33,38 @@ class AlarmProvider with ChangeNotifier {
         triggerAlarm();
       }
     });
+
+    if (AlarmNotificationService.pendingAlarms.isNotEmpty) {
+      if (!_isRinging && _config.isEnabled) {
+        triggerAlarm();
+      }
+      AlarmNotificationService.clearPendingAlarms();
+    }
   }
 
   void _startAlarmCheck() {
     _alarmCheckTimer?.cancel();
+    
+    // Check immediately on startup
+    _checkAlarmTime();
+    
     // Poll every 30 seconds as a fallback detection mechanism.
-    // The primary trigger comes from flutter_alarm_background_trigger (Android)
-    // or the local notification (iOS), but this ensures the alarm fires
-    // even if the background trigger is unavailable.
     _alarmCheckTimer = Timer.periodic(const Duration(seconds: 30), (timer) {
-      if (_config.isEnabled && !_isRinging) {
-        final now = DateTime.now();
-        final minuteKey = '${now.year}-${now.month}-${now.day}-${now.hour}-${now.minute}';
-        if (now.hour == _config.hour &&
-            now.minute == _config.minute &&
-            _lastTriggeredMinute != minuteKey) {
-          _lastTriggeredMinute = minuteKey;
-          triggerAlarm();
-        }
-      }
+      _checkAlarmTime();
     });
+  }
+
+  void _checkAlarmTime() {
+    if (_config.isEnabled && !_isRinging) {
+      final now = DateTime.now();
+      final minuteKey = '${now.year}-${now.month}-${now.day}-${now.hour}-${now.minute}';
+      if (now.hour == _config.hour &&
+          now.minute == _config.minute &&
+          _lastTriggeredMinute != minuteKey) {
+        _lastTriggeredMinute = minuteKey;
+        triggerAlarm();
+      }
+    }
   }
 
   void _loadConfig() {
@@ -76,7 +88,7 @@ class AlarmProvider with ChangeNotifier {
     _config = newConfig;
     await _storage.saveSetting('alarm_config', jsonEncode(newConfig.toJson()));
     if (newConfig.isEnabled) {
-      await AlarmNotificationService.scheduleAlarm(newConfig);
+      await AlarmNotificationService.scheduleAlarm(newConfig, requestPermission: true);
     } else {
       await AlarmNotificationService.cancelAlarm();
     }

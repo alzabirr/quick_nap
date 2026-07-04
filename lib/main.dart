@@ -44,7 +44,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => SleepProvider()),
-        ChangeNotifierProvider(create: (_) => AlarmProvider()),
+        ChangeNotifierProvider(create: (_) => AlarmProvider(), lazy: false),
         ChangeNotifierProvider(create: (_) => AudioLibraryProvider()),
         ChangeNotifierProvider(create: (_) => NotesProvider()),
       ],
