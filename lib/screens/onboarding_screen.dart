@@ -148,7 +148,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             curve: Curves.easeInOutCubic,
                           );
                         },
-                        child: Text('BACK', style: bodyStyle(fontSize: 10, color: Colors.black)),
+                        child: Text('BACK', style: bodyStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black)),
                       )
                     else
                       const SizedBox(width: 80),

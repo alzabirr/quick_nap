@@ -139,13 +139,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                       () => const MemoryMatchGame(),
                                       () => const ColorReactionGame(),
                                       () => const WordScrambleGame(),
-                                      () => const MathChallengeGame(),
                                       () => const SimonSaysGame(),
                                       () => const TicTacToeGame(),
                                       () => const BubblePopGame(),
                                       () => const TypingSpeedGame(),
                                       () => const PuzzleSlideGame(),
-                                      () => const NumberMemoryGame(),
                                       () => const ColorCatchGame(),
                                       () => const WordChainGame(),
                                       () => const RapidTapGame(),
@@ -752,24 +750,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildInfoCard(icon: CupertinoIcons.question_circle_fill, color: accent, title: "Not for Everyone", subtitle: "Some people wake up feeling more tired instead of refreshed."),
               const SizedBox(height: 16),
 
-              Text("BEST PRACTICES", style: bodyStyle(fontSize: 10, color: primary, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              glassCard(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildPracticeRow("Ideal Duration", "10-20 minutes"),
-                    const SizedBox(height: 8),
-                    _buildPracticeRow("Best Time", "Between 1:00 PM and 3:00 PM"),
-                    const SizedBox(height: 8),
-                    _buildPracticeRow("Avoid", "Naps after 4:00 PM"),
-                    const SizedBox(height: 8),
-                    _buildPracticeRow("Environment", "Quiet, cool, dimly lit place"),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 16),
+
 
               Text("RECOMMENDED NAP LENGTHS", style: bodyStyle(fontSize: 10, color: textMid, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -837,25 +818,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildPracticeRow(String label, String value) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Icon(CupertinoIcons.checkmark_circle_fill, color: primary, size: 14),
-        const SizedBox(width: 6),
-        Expanded(
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(text: "$label: ", style: bodyStyle(fontSize: 10, fontWeight: FontWeight.bold)),
-                TextSpan(text: value, style: bodyStyle(fontSize: 10, color: textMid)),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildDurationRow(String duration, String effect) {
     return Row(

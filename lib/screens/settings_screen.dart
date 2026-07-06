@@ -7,6 +7,7 @@ import '../providers/sleep_provider.dart';
 import '../storage/hive_storage.dart';
 import '../themes/app_theme.dart';
 import '../widgets/ambient_background.dart';
+import 'recycle_bin_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final double? bottomPadding;
@@ -21,8 +22,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late String _profileName;
   late String _workspaceName;
   late bool _notificationsEnabled;
-  late bool _cloudSyncEnabled;
-  late bool _hapticFeedbackEnabled;
 
   @override
   void initState() {
@@ -32,9 +31,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _storage.getSetting('workspaceName', 'Personal workspace') as String;
     _notificationsEnabled =
         _storage.getSetting('notificationsEnabled', true) as bool;
-    _cloudSyncEnabled = _storage.getSetting('cloudSyncEnabled', false) as bool;
-    _hapticFeedbackEnabled =
-        _storage.getSetting('hapticFeedbackEnabled', true) as bool;
   }
 
   Future<void> _saveBool(String key, bool value) async {
@@ -46,84 +42,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await _saveBool('notificationsEnabled', value);
   }
 
-  Future<void> _updateCloudSync(bool value) async {
-    setState(() => _cloudSyncEnabled = value);
-    await _saveBool('cloudSyncEnabled', value);
-    if (!mounted) return;
-    _showInfoDialog(
-      title: value ? 'Cloud sync on' : 'Cloud sync off',
-      message: value
-          ? 'Your data will be backed up when cloud sync is connected.'
-          : 'Your data will stay local on this device.',
-    );
-  }
-
-  Future<void> _updateHapticFeedback(bool value) async {
-    setState(() => _hapticFeedbackEnabled = value);
-    await _saveBool('hapticFeedbackEnabled', value);
-  }
-
   Future<void> _showEditProfileDialog() async {
-    final nameController = TextEditingController(text: _profileName);
-    final workspaceController = TextEditingController(text: _workspaceName);
-
-    await showDialog<void>(
+    final result = await showDialog<Map<String, String>>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          backgroundColor: surface,
-          title: Text('Edit profile', style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
-                style: const TextStyle(fontSize: 12),
-              ),
-              const SizedBox(height: 10),
-              TextField(
-                controller: workspaceController,
-                decoration: const InputDecoration(labelText: 'Workspace'),
-                style: const TextStyle(fontSize: 12),
-              ),
-            ],
-          ),
-          actions: [
-            NesButton(
-              type: NesButtonType.normal,
-              onPressed: () => Navigator.of(dialogContext).pop(),
-              child: Text('Cancel', style: bodyStyle(fontSize: 10, color: Colors.black)),
-            ),
-            NesButton(
-              type: NesButtonType.primary,
-              onPressed: () async {
-                final name = nameController.text.trim().isEmpty
-                    ? 'Starter User'
-                    : nameController.text.trim();
-                final workspace = workspaceController.text.trim().isEmpty
-                    ? 'Personal workspace'
-                    : workspaceController.text.trim();
-
-                setState(() {
-                  _profileName = name;
-                  _workspaceName = workspace;
-                });
-                await _storage.saveSetting('profileName', name);
-                await _storage.saveSetting('workspaceName', workspace);
-                if (dialogContext.mounted) {
-                  Navigator.of(dialogContext).pop();
-                }
-              },
-              child: Text('Save', style: bodyStyle(fontSize: 10)),
-            ),
-          ],
-        );
-      },
+      builder: (dialogContext) => _EditProfileDialog(
+        initialName: _profileName,
+        initialWorkspace: _workspaceName,
+      ),
     );
 
-    nameController.dispose();
-    workspaceController.dispose();
+    if (result != null) {
+      final name = result['name']!;
+      final workspace = result['workspace']!;
+      setState(() {
+        _profileName = name;
+        _workspaceName = workspace;
+      });
+      await _storage.saveSetting('profileName', name);
+      await _storage.saveSetting('workspaceName', workspace);
+    }
   }
 
   void _showInfoDialog({required String title, required String message}) {
@@ -205,25 +142,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _SettingsGroup(
                       title: 'ACCOUNT',
                       children: [
-                        _ActionSetting(
-                          icon: CupertinoIcons.person_crop_circle,
-                          title: 'Edit profile',
-                          subtitle: 'Name and personal details',
-                          onTap: _showEditProfileDialog,
-                        ),
-                        const _Divider(),
                         _SwitchSetting(
                           title: 'Notifications',
                           subtitle: 'Alarm and reminder alerts',
                           value: _notificationsEnabled,
                           onChanged: _updateNotifications,
-                        ),
-                        const _Divider(),
-                        _SwitchSetting(
-                          title: 'Cloud sync',
-                          subtitle: 'Back up your data',
-                          value: _cloudSyncEnabled,
-                          onChanged: _updateCloudSync,
                         ),
                       ],
                     ),
@@ -247,13 +170,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _SettingsGroup(
                       title: 'APP',
                       children: [
-                        _SwitchSetting(
-                          title: 'Haptic feedback',
-                          subtitle: 'Vibrate on interactions',
-                          value: _hapticFeedbackEnabled,
-                          onChanged: _updateHapticFeedback,
-                        ),
-                        const _Divider(),
                         _ActionSetting(
                           icon: CupertinoIcons.lock_shield,
                           title: 'Privacy',
@@ -274,6 +190,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: 'DATA',
                       children: [
                         _ActionSetting(
+                          icon: CupertinoIcons.trash,
+                          title: 'Recycle Bin',
+                          subtitle: 'View and restore deleted notes',
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const RecycleBinScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const _Divider(),
+                        _ActionSetting(
                           icon: CupertinoIcons.refresh,
                           title: 'Reset Application',
                           subtitle: 'Clear all data and start fresh',
@@ -288,7 +217,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   NesButton(
                                     type: NesButtonType.normal,
                                     onPressed: () => Navigator.of(dialogContext).pop(),
-                                    child: Text("Cancel", style: bodyStyle(fontSize: 10, color: Colors.black)),
+                                    child: Text("Cancel", style: bodyStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black)),
                                   ),
                                   NesButton(
                                     type: NesButtonType.error,
@@ -302,7 +231,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                       if (context.mounted) {
                                         Provider.of<SleepProvider>(context, listen: false).resetState();
                                         Provider.of<AlarmProvider>(context, listen: false).resetState();
-                                        Navigator.of(dialogContext).pop();
                                         Navigator.of(context).pushNamedAndRemoveUntil('/onboarding', (route) => false);
                                       }
                                     },
@@ -483,6 +411,78 @@ class _Divider extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Container(height: 1, color: const Color(0xff808080).withValues(alpha: 0.3)),
+    );
+  }
+}
+
+class _EditProfileDialog extends StatefulWidget {
+  final String initialName;
+  final String initialWorkspace;
+
+  const _EditProfileDialog({
+    required this.initialName,
+    required this.initialWorkspace,
+  });
+
+  @override
+  State<_EditProfileDialog> createState() => _EditProfileDialogState();
+}
+
+class _EditProfileDialogState extends State<_EditProfileDialog> {
+  late final TextEditingController nameController;
+  late final TextEditingController workspaceController;
+
+  @override
+  void initState() {
+    super.initState();
+    nameController = TextEditingController(text: widget.initialName);
+    workspaceController = TextEditingController(text: widget.initialWorkspace);
+  }
+
+  @override
+  void dispose() {
+    nameController.dispose();
+    workspaceController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      backgroundColor: surface,
+      title: Text('Edit profile', style: headingStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: nameController,
+            decoration: const InputDecoration(labelText: 'Name'),
+            style: const TextStyle(fontSize: 12),
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            controller: workspaceController,
+            decoration: const InputDecoration(labelText: 'Workspace'),
+            style: const TextStyle(fontSize: 12),
+          ),
+        ],
+      ),
+      actions: [
+        NesButton(
+          type: NesButtonType.normal,
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text('Cancel', style: bodyStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black)),
+        ),
+        NesButton(
+          type: NesButtonType.primary,
+          onPressed: () {
+            final name = nameController.text.trim().isEmpty ? 'Starter User' : nameController.text.trim();
+            final workspace = workspaceController.text.trim().isEmpty ? 'Personal workspace' : workspaceController.text.trim();
+            Navigator.of(context).pop({'name': name, 'workspace': workspace});
+          },
+          child: Text('Save', style: bodyStyle(fontSize: 10)),
+        ),
+      ],
     );
   }
 }

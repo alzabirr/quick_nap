@@ -122,7 +122,7 @@ class _AlertnessGameScreenState extends State<AlertnessGameScreen> {
                 right: 20,
                 child: Row(
                   children: [
-                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: const Icon(CupertinoIcons.chevron_left, color: Colors.black, size: 20)),
+                    NesButton(type: NesButtonType.normal, onPressed: () => Navigator.of(context).pop(), child: Icon(CupertinoIcons.chevron_left, color: isDarkMode ? Colors.white : Colors.black, size: 20)),
                     const SizedBox(width: 8),
                     Text('MORNING REFLEXES', style: headingStyle(fontSize: 14, fontWeight: FontWeight.bold)),
                   ],

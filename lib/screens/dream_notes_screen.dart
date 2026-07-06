@@ -92,7 +92,7 @@ class DreamNotesScreen extends StatelessWidget {
                         itemCount: notes.length,
                         itemBuilder: (context, index) {
                           final note = notes[index];
-                          final dateStr = DateFormat('EEEE, MMMM d').format(note.date);
+                          final dateStr = DateFormat('EEEE, MMMM d • h:mm a').format(note.date);
 
                           return Padding(
                             padding: const EdgeInsets.only(bottom: 12.0),
@@ -110,18 +110,23 @@ class DreamNotesScreen extends StatelessWidget {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(note.content, style: bodyStyle(fontSize: 8, color: textDark.withValues(alpha: 0.85), height: 1.4), maxLines: 3, overflow: TextOverflow.ellipsis),
-                                    const SizedBox(height: 10),
+                                    const SizedBox(height: 14),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        Row(
-                                          children: [
-                                            if (note.isPinned) ...[
-                                              Icon(CupertinoIcons.pin_fill, color: primary, size: 10),
-                                              const SizedBox(width: 4),
+                                        Expanded(
+                                          child: Row(
+                                            children: [
+                                              if (note.isPinned) ...[
+                                                Icon(CupertinoIcons.pin_fill, color: primary, size: 10),
+                                                const SizedBox(width: 4),
+                                              ],
+                                              Expanded(
+                                                child: Text(dateStr, style: bodyStyle(fontSize: 8, fontWeight: FontWeight.bold, color: textMid)),
+                                              ),
                                             ],
-                                            Text(dateStr, style: bodyStyle(fontSize: 8, fontWeight: FontWeight.bold, color: textMid)),
-                                          ],
+                                          ),
                                         ),
                                         NesButton(
                                           type: NesButtonType.normal,
@@ -157,7 +162,7 @@ class DreamNotesScreen extends StatelessWidget {
             NesButton(
               type: NesButtonType.normal,
               onPressed: () => Navigator.of(context).pop(),
-              child: Text('Cancel', style: bodyStyle(fontSize: 10, color: Colors.black)),
+              child: Text('Cancel', style: bodyStyle(fontSize: 10, color: isDarkMode ? Colors.white : Colors.black)),
             ),
             NesButton(
               type: NesButtonType.error,

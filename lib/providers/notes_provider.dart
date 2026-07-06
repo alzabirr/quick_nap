@@ -6,8 +6,10 @@ import '../storage/hive_storage.dart';
 class NotesProvider with ChangeNotifier {
   final HiveStorage _storage = HiveStorage();
   List<DreamNote> _notes = [];
+  List<DreamNote> _trash = [];
 
   List<DreamNote> get notes => _notes;
+  List<DreamNote> get trash => _trash;
 
   NotesProvider() {
     _loadNotes();
@@ -25,6 +27,19 @@ class NotesProvider with ChangeNotifier {
     } else {
       _notes = [];
     }
+
+    final trashJson = _storage.getSetting('dream_notes_trash', null);
+    if (trashJson != null) {
+      try {
+        final decoded = jsonDecode(trashJson as String) as List<dynamic>;
+        _trash = decoded.map((item) => DreamNote.fromJson(item as Map<String, dynamic>)).toList();
+      } catch (e) {
+        _trash = [];
+      }
+    } else {
+      _trash = [];
+    }
+
     notifyListeners();
   }
 
@@ -43,13 +58,49 @@ class NotesProvider with ChangeNotifier {
     }
   }
 
+  /// Soft delete: moves note to trash
   Future<void> deleteNote(String id) async {
-    _notes.removeWhere((n) => n.id == id);
-    await _saveNotes();
+    final index = _notes.indexWhere((n) => n.id == id);
+    if (index != -1) {
+      _trash.add(_notes[index]);
+      _notes.removeAt(index);
+      await _saveNotes();
+      await _saveTrash();
+      notifyListeners();
+    }
+  }
+
+  /// Restore note from trash back to notes
+  Future<void> restoreNote(String id) async {
+    final index = _trash.indexWhere((n) => n.id == id);
+    if (index != -1) {
+      _notes.add(_trash[index]);
+      _trash.removeAt(index);
+      await _saveNotes();
+      await _saveTrash();
+      notifyListeners();
+    }
+  }
+
+  /// Permanently delete a note from trash
+  Future<void> permanentlyDeleteNote(String id) async {
+    _trash.removeWhere((n) => n.id == id);
+    await _saveTrash();
+    notifyListeners();
+  }
+
+  /// Empty the entire trash
+  Future<void> emptyTrash() async {
+    _trash = [];
+    await _saveTrash();
     notifyListeners();
   }
 
   Future<void> _saveNotes() async {
     await _storage.saveSetting('dream_notes_list', jsonEncode(_notes.map((n) => n.toJson()).toList()));
+  }
+
+  Future<void> _saveTrash() async {
+    await _storage.saveSetting('dream_notes_trash', jsonEncode(_trash.map((n) => n.toJson()).toList()));
   }
 }
