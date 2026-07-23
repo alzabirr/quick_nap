@@ -10,7 +10,6 @@ import '../widgets/ambient_background.dart';
 import '../widgets/glass_card.dart';
 import '../models/alarm_config.dart';
 import '../storage/hive_storage.dart';
-import '../services/battery_optimization_service.dart';
 import 'settings_screen.dart';
 import 'dream_notes_screen.dart';
 import 'brain_games_screen.dart';
@@ -326,8 +325,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   
                   Navigator.of(sheetContext).pop();
                   NesSnackbar.show(context, text: '$title alarm set for $timeStr');
-                  // Ask user to disable battery optimization for reliable alarms
-                  BatteryOptimizationService.requestExemptionIfNeeded(context);
                 },
                 child: const Text('SET ALARM'),
               ),
@@ -906,12 +903,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     GestureDetector(
                       onTap: pickTime,
                       child: NesContainer(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(timeStr, style: headingStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+                            Flexible(
+                              child: FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  timeStr,
+                                  style: headingStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
                             const SizedBox(width: 8),
                             Icon(CupertinoIcons.pencil, color: primary, size: 16),
                           ],

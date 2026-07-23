@@ -96,6 +96,20 @@ ThemeData buildNesTheme({required Brightness brightness}) {
       warning: warningColor,
       error: accent,
     ),
+  ).copyWith(
+    timePickerTheme: TimePickerThemeData(
+      hourMinuteTextStyle: const TextStyle(
+        fontSize: 32,
+        fontWeight: FontWeight.bold,
+      ),
+      dayPeriodTextStyle: const TextStyle(
+        fontSize: 10,
+        fontWeight: FontWeight.bold,
+      ),
+      helpTextStyle: const TextStyle(
+        fontSize: 10,
+      ),
+    ),
   );
 }
 

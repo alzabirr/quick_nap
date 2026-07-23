@@ -138,7 +138,7 @@ class AlarmNotificationService {
             presentSound: true,
           ),
         ),
-        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        androidScheduleMode: AndroidScheduleMode.alarmClock,
       );
       debugPrint('Local notification alarm scheduled for ${config.hour}:${config.minute}');
     } catch (error) {
